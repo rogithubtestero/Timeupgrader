@@ -15,6 +15,8 @@ import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.util.Log
 import android.view.*
+import android.widget.Adapter
+import android.widget.AdapterView
 import android.widget.Toast
 
 import com.robinrosenstock.timeupgrader.dummy.DummyContent
@@ -93,14 +95,26 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
 
 
         fab.setOnClickListener {
+
+//            ////// start other display/class:
 //            val intent = Intent(this, Fileactor::class.java)
 //            startActivity(intent)
 
-            val intent = Intent()
-                    .setType("*/*")
-                    .setAction(Intent.ACTION_GET_CONTENT)
+//            /////// start an activity for result
+//            val intent = Intent()
+//                    .setType("*/*")
+//                    .setAction(Intent.ACTION_GET_CONTENT)
+//            startActivityForResult(Intent.createChooser(intent, "Select a file"), 111)
 
-            startActivityForResult(Intent.createChooser(intent, "Select a file"), 111)
+
+//            this is a test: add a list item by clicking on the fab button
+//            DummyContent.addItem(DummyContent.DummyItem("1", "string1", "details1"))
+
+            val neger = DummyContent.DummyItem("4","string4","details4")
+            DummyContent.ITEMS.add(neger)
+            updateRecyclerView(item_list)
+
+
         }
 
 
@@ -148,6 +162,12 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         recyclerView.adapter = SimpleItemRecyclerViewAdapter(this, DummyContent.ITEMS, twoPane)
     }
 
+
+    private fun updateRecyclerView(recyclerView: RecyclerView) {
+        recyclerView.adapter.notifyDataSetChanged()
+    }
+
+
     class SimpleItemRecyclerViewAdapter(private val parentActivity: ItemListActivity,
                                         private val values: List<DummyContent.DummyItem>,
                                         private val twoPane: Boolean) :
@@ -176,6 +196,8 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
                 }
             }
         }
+
+
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val view = LayoutInflater.from(parent.context)
