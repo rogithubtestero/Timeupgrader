@@ -1,8 +1,11 @@
 package com.robinrosenstock.timeupgrader
 
+import android.content.ContentResolver
 import android.content.Intent
 import android.os.Bundle
+import android.os.Environment
 import android.support.design.widget.NavigationView
+import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.widget.TextView
@@ -10,13 +13,16 @@ import android.widget.TextView
 import android.support.v4.view.GravityCompat
 
 import android.support.v7.app.ActionBarDrawerToggle
+import android.util.Log
 import android.view.*
+import android.widget.Toast
 
 import com.robinrosenstock.timeupgrader.dummy.DummyContent
 import kotlinx.android.synthetic.main.app_bar_main2.*
 import kotlinx.android.synthetic.main.activity_main2.*
 import kotlinx.android.synthetic.main.item_list_content.view.*
 import kotlinx.android.synthetic.main.item_list.*
+import java.io.*
 
 /**
  * An activity representing a list of Pings. This activity
@@ -35,6 +41,42 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
     private var twoPane: Boolean = false
 
 
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == 111 && resultCode == RESULT_OK) {
+            val selectedFile = data?.data //The uri with the location of the file
+            Log.d("tag", selectedFile.toString())
+
+
+
+//            read the file in:
+            try {
+
+                val fIn = getContentResolver().openInputStream(selectedFile)
+                val file = InputStreamReader (fIn)
+                val br = BufferedReader (file)
+                var line = br.readLine ()
+                val all = StringBuilder ()
+                while (line!= null) {
+                    all.append (line + "\n")
+                    line = br.readLine ()
+                }
+                br.close ()
+                file.close ()
+
+            } catch (e: IOException) {
+                Toast.makeText (this, "Could not read", Toast.LENGTH_SHORT) .show ()
+                Log.d("ioioioioioioioioio", e.toString())
+            }
+
+
+
+        }
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main2)
@@ -51,8 +93,14 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
 
 
         fab.setOnClickListener {
-            val intent = Intent(this, Fileactor::class.java)
-            startActivity(intent)
+//            val intent = Intent(this, Fileactor::class.java)
+//            startActivity(intent)
+
+            val intent = Intent()
+                    .setType("*/*")
+                    .setAction(Intent.ACTION_GET_CONTENT)
+
+            startActivityForResult(Intent.createChooser(intent, "Select a file"), 111)
         }
 
 
