@@ -53,7 +53,7 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
 
 
 
-//            read the file in:
+//            read the file in and add each line as a DummyItem it for the recycler view:
             try {
 
                 val fIn = getContentResolver().openInputStream(selectedFile)
@@ -61,9 +61,16 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
                 val br = BufferedReader (file)
                 var line = br.readLine ()
                 val all = StringBuilder ()
+                var item_id = 0
                 while (line!= null) {
                     all.append (line + "\n")
                     line = br.readLine ()
+
+                    if (line!=null) {
+                        val neger = DummyContent.DummyItem(item_id.toString(), line, "details will be filled later")
+                        item_id = item_id.inc()
+                        DummyContent.ITEMS.add(neger)
+                    }
                 }
                 br.close ()
                 file.close ()
@@ -73,10 +80,14 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
                 Log.d("ioioioioioioioioio", e.toString())
             }
 
+            updateRecyclerView(item_list)
+
+
 
 
         }
     }
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -101,21 +112,12 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
 //            startActivity(intent)
 
 //            /////// start an activity for result
-//            val intent = Intent()
-//                    .setType("*/*")
-//                    .setAction(Intent.ACTION_GET_CONTENT)
-//            startActivityForResult(Intent.createChooser(intent, "Select a file"), 111)
+            val intent = Intent()
+                    .setType("*/*")
+                    .setAction(Intent.ACTION_GET_CONTENT)
+            startActivityForResult(Intent.createChooser(intent, "Select a file"), 111)
+            }
 
-
-//            this is a test: add a list item by clicking on the fab button
-//            DummyContent.addItem(DummyContent.DummyItem("1", "string1", "details1"))
-
-            val neger = DummyContent.DummyItem("4","string4","details4")
-            DummyContent.ITEMS.add(neger)
-            updateRecyclerView(item_list)
-
-
-        }
 
 
         val toggle = ActionBarDrawerToggle(
