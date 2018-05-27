@@ -121,10 +121,46 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
             alertDialog.show()
 
             view.alert_dialog_button.setOnClickListener{
+
+//                ///// just take the text and display as toast
                 val name = view.alert_dialog_text_input.text.toString()
-                Toast.makeText(this@ItemListActivity, name, Toast.LENGTH_LONG).show()
+//                Toast.makeText(this@ItemListActivity, name, Toast.LENGTH_LONG).show()
+
+                val neger = DummyContent.DummyItem("0", name, "details will be filled later")
+//                item_id = item_id.inc()
+                DummyContent.ITEMS.add(neger)
+
 
                 alertDialog.dismiss()
+
+//                need only to write content for every item in dummycontent
+                Toast.makeText(this@ItemListActivity, DummyContent.ITEMS.toList().toString(), Toast.LENGTH_LONG).show()
+//                DummyContent.ITEMS.toList().toString()
+
+
+                File(Environment.getExternalStoragePublicDirectory(
+                            Environment.DIRECTORY_DOCUMENTS), "tttestfile").bufferedWriter().use { out ->
+                    DummyContent.ITEMS.forEach {
+                        out.write(it.content + "\n")
+                    }
+                }
+
+
+//                try {
+//                    val file = File(Environment.getExternalStoragePublicDirectory(
+//                            Environment.DIRECTORY_DOCUMENTS), "tttestfile")
+//                    val osw = OutputStreamWriter (FileOutputStream (file))
+//                    osw.write (et2.text.toString ())
+//                    osw.flush ()
+//                    osw.close ()
+//                    Toast.makeText (this, "The data was recorded correctly", Toast.LENGTH_SHORT) .show ()
+//                    et1.setText ("")
+//                    et2.setText ("")
+//                } catch (ioe: IOException) {
+//                    Toast.makeText (this, "Could not burn", Toast.LENGTH_SHORT) .show ()
+//                }
+
+
             }
 
 
