@@ -58,6 +58,7 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
                 var line = br.readLine ()
                 val all = StringBuilder ()
                 var item_id = 0
+
                 while (line!= null) {
                     all.append (line + "\n")
                     line = br.readLine ()
@@ -97,9 +98,9 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
 
         fab.setOnClickListener {
 
-//            ////// start other display/class:
-//            val intent = Intent(this, Fileactor::class.java)
-//            startActivity(intent)
+            ////// start other display/class:
+            val intent = Intent(this, Fileactor::class.java)
+            startActivity(intent)
 
 
 

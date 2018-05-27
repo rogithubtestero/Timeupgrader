@@ -1,5 +1,9 @@
 package com.robinrosenstock.timeupgrader.dummy
 
+import android.os.Environment
+import android.util.Log
+import android.widget.Toast
+import java.io.*
 import java.util.ArrayList
 import java.util.HashMap
 
@@ -24,9 +28,43 @@ object DummyContent {
 
 
     init {
-        addItem(DummyItem("1", "string1", "details1"))
-        addItem(DummyItem("2", "string2", "details2"))
-        addItem(DummyItem("3", "string3", "details3"))
+
+//        retrieve the saved time.txt file
+
+        val file = File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DOCUMENTS), "tttestfile")
+        try {
+            val fIn = FileInputStream (file)
+            val file = InputStreamReader (fIn)
+            val br = BufferedReader (file)
+            var line = br.readLine ()
+            val all = StringBuilder ()
+            var item_id = 0
+
+            while (line != null) {
+                if (line.isNotBlank()){
+                    val neger = DummyContent.DummyItem(item_id.toString(), line, "details will be filled later")
+                    DummyContent.ITEMS.add(neger)
+
+                    all.append (line + "\n")
+                    item_id = item_id.inc()
+                }
+                line = br.readLine ()
+
+            }
+            br.close ()
+            file.close ()
+
+        } catch (e: IOException) {
+//            Toast.makeText (, "Could not read", Toast.LENGTH_SHORT) .show ()
+            Log.d("tag","text")
+        }
+
+
+
+//        addItem(DummyItem("1", "string1", "details1"))
+//        addItem(DummyItem("2", "string2", "details2"))
+//        addItem(DummyItem("3", "string3", "details3"))
     }
 
 
