@@ -110,12 +110,6 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
 //            ////// start other display/class:
 //            val intent = Intent(this, Fileactor::class.java)
 //            startActivity(intent)
-
-//            /////// start an activity for result
-            val intent = Intent()
-                    .setType("*/*")
-                    .setAction(Intent.ACTION_GET_CONTENT)
-            startActivityForResult(Intent.createChooser(intent, "Select a file"), 111)
             }
 
 
@@ -151,10 +145,14 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
 
-        val intent = Intent(this, SettingsActivity::class.java)
+        val intent1 = Intent(this, SettingsActivity::class.java)
+        val intent2 = Intent()
+                .setType("*/*")
+                .setAction(Intent.ACTION_GET_CONTENT)
 
         when (item.itemId) {
-            R.id.action_settings -> startActivity(intent)
+            R.id.action_settings -> startActivity(intent1)
+            R.id.import_file -> startActivityForResult(Intent.createChooser(intent2, "Select a file"), 111)
             else -> super.onOptionsItemSelected(item)
         }
         return super.onOptionsItemSelected(item)
