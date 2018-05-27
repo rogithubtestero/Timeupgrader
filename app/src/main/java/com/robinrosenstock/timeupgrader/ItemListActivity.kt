@@ -2,14 +2,18 @@ package com.robinrosenstock.timeupgrader
 
 import android.app.Dialog
 import android.content.ContentResolver
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.support.design.widget.NavigationView
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
+
+
 
 import android.support.v4.view.GravityCompat
 
@@ -48,39 +52,20 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
+
+//        /////// open file //////////
+        if (requestCode == 222 && resultCode == RESULT_OK) {
+            val selectedFile = data?.data //The uri with the location of the file
+
+            readFile(baseContext,selectedFile)
+            updateRecyclerView(item_list)
+        }
+
+
+//        /////// import file //////////
         if (requestCode == 111 && resultCode == RESULT_OK) {
             val selectedFile = data?.data //The uri with the location of the file
-            Log.d("tag", selectedFile.toString())
-
-
-//            read the file in and add each line as a DummyItem it for the recycler view:
-            try {
-
-                val fIn = getContentResolver().openInputStream(selectedFile)
-                val file = InputStreamReader (fIn)
-                val br = BufferedReader (file)
-                var line = br.readLine ()
-                val all = StringBuilder ()
-                var item_id = 0
-
-                while (line!= null) {
-                    all.append (line + "\n")
-                    line = br.readLine ()
-
-                    if (line!=null) {
-                        val neger = DummyContent.DummyItem(item_id.toString(), line, "details will be filled later")
-                        item_id = item_id.inc()
-                        DummyContent.ITEMS.add(neger)
-                    }
-                }
-                br.close ()
-                file.close ()
-
-            } catch (e: IOException) {
-                Toast.makeText (this, "Could not read", Toast.LENGTH_SHORT) .show ()
-                Log.d("ioioioioioioioioio", e.toString())
-            }
-
+            readFile(baseContext, selectedFile)
             updateRecyclerView(item_list)
         }
     }
@@ -109,56 +94,27 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
 
 //          ////////  add a task through a custom dialog, learned from here: <https://www.youtube.com/watch?v=Z9LhAgBSlhU> /////
             val dialogBuilder = AlertDialog.Builder(this@ItemListActivity)
-
             dialogBuilder.setTitle("title")
             dialogBuilder.setMessage("I am a alert dialog!")
-
             val view = layoutInflater.inflate(R.layout.alert_dialog, null)
-
             dialogBuilder.setView(view)
-
             val alertDialog = dialogBuilder.create()
             alertDialog.show()
 
             view.alert_dialog_button.setOnClickListener{
-
-//                ///// just take the text and display as toast
                 val name = view.alert_dialog_text_input.text.toString()
-//                Toast.makeText(this@ItemListActivity, name, Toast.LENGTH_LONG).show()
+//              add the task to the list:
+                val newtask = DummyContent.DummyItem("0", name, "details will be filled later")
+                DummyContent.ITEMS.add(newtask)
 
-                val neger = DummyContent.DummyItem("0", name, "details will be filled later")
-//                item_id = item_id.inc()
-                DummyContent.ITEMS.add(neger)
-
-
+//                make a toast and dismiss the dialog:
+                Toast.makeText(this@ItemListActivity, name, Toast.LENGTH_LONG).show()
                 alertDialog.dismiss()
 
-//                need only to write content for every item in dummycontent
-                Toast.makeText(this@ItemListActivity, DummyContent.ITEMS.toList().toString(), Toast.LENGTH_LONG).show()
-//                DummyContent.ITEMS.toList().toString()
+//                update the view and write file:
+                updateRecyclerView(item_list)
+                writeFile("time.txt")
 
-
-                File(Environment.getExternalStoragePublicDirectory(
-                            Environment.DIRECTORY_DOCUMENTS), "tttestfile").bufferedWriter().use { out ->
-                    DummyContent.ITEMS.forEach {
-                        out.write(it.content + "\n")
-                    }
-                }
-
-
-//                try {
-//                    val file = File(Environment.getExternalStoragePublicDirectory(
-//                            Environment.DIRECTORY_DOCUMENTS), "tttestfile")
-//                    val osw = OutputStreamWriter (FileOutputStream (file))
-//                    osw.write (et2.text.toString ())
-//                    osw.flush ()
-//                    osw.close ()
-//                    Toast.makeText (this, "The data was recorded correctly", Toast.LENGTH_SHORT) .show ()
-//                    et1.setText ("")
-//                    et2.setText ("")
-//                } catch (ioe: IOException) {
-//                    Toast.makeText (this, "Could not burn", Toast.LENGTH_SHORT) .show ()
-//                }
 
 
             }
@@ -203,8 +159,9 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
                 .setAction(Intent.ACTION_GET_CONTENT)
 
         when (item.itemId) {
-            R.id.action_settings -> startActivity(intent1)
+            R.id.open_file -> startActivityForResult(Intent.createChooser(intent2, "Select a file"), 222)
             R.id.import_file -> startActivityForResult(Intent.createChooser(intent2, "Select a file"), 111)
+            R.id.action_settings -> startActivity(intent1)
             else -> super.onOptionsItemSelected(item)
         }
         return super.onOptionsItemSelected(item)
@@ -313,3 +270,7 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
 
 
 }
+
+
+
+
