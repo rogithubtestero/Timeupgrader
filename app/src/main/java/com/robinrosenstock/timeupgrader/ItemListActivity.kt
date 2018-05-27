@@ -1,6 +1,8 @@
 package com.robinrosenstock.timeupgrader
 
+import android.app.Dialog
 import android.content.ContentResolver
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
@@ -12,6 +14,7 @@ import android.support.v7.widget.RecyclerView
 import android.support.v4.view.GravityCompat
 
 import android.support.v7.app.ActionBarDrawerToggle
+import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.view.*
 import android.widget.*
@@ -19,6 +22,7 @@ import android.widget.*
 import com.robinrosenstock.timeupgrader.dummy.DummyContent
 import kotlinx.android.synthetic.main.app_bar_main2.*
 import kotlinx.android.synthetic.main.activity_main2.*
+import kotlinx.android.synthetic.main.alert_dialog.view.*
 import kotlinx.android.synthetic.main.item_list_content.view.*
 import kotlinx.android.synthetic.main.item_list.*
 import java.io.*
@@ -99,12 +103,32 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         fab.setOnClickListener {
 
             ////// start other display/class:
-            val intent = Intent(this, Fileactor::class.java)
-            startActivity(intent)
+//            val intent = Intent(this, Fileactor::class.java)
+//            startActivity(intent)
 
 
+//          ////////  add a task through a custom dialog, learned from here: <https://www.youtube.com/watch?v=Z9LhAgBSlhU> /////
+            val dialogBuilder = AlertDialog.Builder(this@ItemListActivity)
 
+            dialogBuilder.setTitle("title")
+            dialogBuilder.setMessage("I am a alert dialog!")
+
+            val view = layoutInflater.inflate(R.layout.alert_dialog, null)
+
+            dialogBuilder.setView(view)
+
+            val alertDialog = dialogBuilder.create()
+            alertDialog.show()
+
+            view.alert_dialog_button.setOnClickListener{
+                val name = view.alert_dialog_text_input.text.toString()
+                Toast.makeText(this@ItemListActivity, name, Toast.LENGTH_LONG).show()
+
+                alertDialog.dismiss()
             }
+
+
+        }
 
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
