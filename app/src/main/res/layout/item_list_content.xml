@@ -17,4 +17,12 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/text_margin"
         android:textAppearance="?attr/textAppearanceListItem" />
+
+    <Button
+        android:id="@+id/push_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:onClick="starttimer"
+        android:text="Button" />
 </LinearLayout>

@@ -8,16 +8,13 @@ import android.support.design.widget.NavigationView
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
-import android.widget.TextView
 
 import android.support.v4.view.GravityCompat
 
 import android.support.v7.app.ActionBarDrawerToggle
 import android.util.Log
 import android.view.*
-import android.widget.Adapter
-import android.widget.AdapterView
-import android.widget.Toast
+import android.widget.*
 
 import com.robinrosenstock.timeupgrader.dummy.DummyContent
 import kotlinx.android.synthetic.main.app_bar_main2.*
@@ -52,7 +49,6 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
             Log.d("tag", selectedFile.toString())
 
 
-
 //            read the file in and add each line as a DummyItem it for the recycler view:
             try {
 
@@ -81,13 +77,8 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
             }
 
             updateRecyclerView(item_list)
-
-
-
-
         }
     }
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -104,15 +95,15 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
 //           .setAction("Action", null).show()
 //        }
 
-
         fab.setOnClickListener {
 
 //            ////// start other display/class:
 //            val intent = Intent(this, Fileactor::class.java)
 //            startActivity(intent)
+
+
+
             }
-
-
 
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
@@ -210,6 +201,11 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
             holder.idView.text = item.id
             holder.contentView.text = item.content
 
+            holder.buttonView.setOnClickListener {
+                Toast.makeText(this.parentActivity, "timer start for: " + item.toString(), Toast.LENGTH_LONG).show()
+
+            }
+
             with(holder.itemView) {
                 tag = item
                 setOnClickListener(onClickListener)
@@ -221,6 +217,7 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             val idView: TextView = view.id_text
             val contentView: TextView = view.content
+            val buttonView: Button = view.push_button
         }
     }
 
