@@ -33,7 +33,8 @@ import kotlinx.android.synthetic.main.item_list_content.view.*
 import kotlinx.android.synthetic.main.item_list.*
 import java.io.*
 import android.app.Activity
-import kotlinx.android.synthetic.main.item_list_content.*
+import com.fondesa.recyclerviewdivider.RecyclerViewDivider
+import kotlinx.android.synthetic.main.testlayout2.view.*
 
 
 /**
@@ -172,6 +173,7 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
 
     private fun setupRecyclerView(recyclerView: RecyclerView) {
         recyclerView.adapter = SimpleItemRecyclerViewAdapter(this, DummyContent.ITEMS, twoPane)
+        RecyclerViewDivider.with(this).build().addTo(recyclerView)
     }
 
 
@@ -232,7 +234,7 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
                 DummyContent.ITEMS.remove(item)
 //                parentActivity.updateRecyclerView()
                     parentActivity.updateRecyclerView(parentActivity.item_list)
-//                    writeFile("time.txt")
+                    writeFile("time.txt")
                 }
 true
             }
@@ -242,13 +244,13 @@ true
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val view = LayoutInflater.from(parent.context)
-                    .inflate(R.layout.item_list_content, parent, false)
+                    .inflate(R.layout.testlayout2, parent, false)
             return ViewHolder(view)
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val item = values[position]
-            holder.idView.text = item.id
+//            holder.idView.text = item.id
             holder.contentView.text = item.content
 
             holder.buttonView.setOnClickListener {
@@ -267,11 +269,12 @@ true
         override fun getItemCount() = values.size
 
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-            val idView: TextView = view.id_text
+//            val idView: TextView = view.id_text
             val contentView: TextView = view.content
             val buttonView: Button = view.push_button
         }
     }
+
 
 
 
