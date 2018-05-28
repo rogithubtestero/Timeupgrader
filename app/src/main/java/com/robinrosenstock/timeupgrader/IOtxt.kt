@@ -12,8 +12,7 @@ import java.io.File
 fun writeFile(filename: String){
 
     ////// save  entry/line to the file //////////
-    File(Environment.getExternalStoragePublicDirectory(
-            Environment.DIRECTORY_DOCUMENTS), filename).bufferedWriter().use { out ->
+    File(Environment.getExternalStoragePublicDirectory("/time"), filename).bufferedWriter().use { out ->
         DummyContent.ITEMS.forEach {
             out.write(it.content + "\n")
         }

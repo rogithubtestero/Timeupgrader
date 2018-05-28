@@ -21,15 +21,20 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.view.*
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
 
 import com.robinrosenstock.timeupgrader.dummy.DummyContent
 import kotlinx.android.synthetic.main.app_bar_main2.*
 import kotlinx.android.synthetic.main.activity_main2.*
+import kotlinx.android.synthetic.main.alert_dialog.*
 import kotlinx.android.synthetic.main.alert_dialog.view.*
 import kotlinx.android.synthetic.main.item_list_content.view.*
 import kotlinx.android.synthetic.main.item_list.*
 import java.io.*
+import android.app.Activity
+import kotlinx.android.synthetic.main.item_list_content.*
+
 
 /**
  * An activity representing a list of Pings. This activity
@@ -46,29 +51,6 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
      * device.
      */
     private var twoPane: Boolean = false
-
-
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-
-//        /////// open file //////////
-        if (requestCode == 222 && resultCode == RESULT_OK) {
-            val selectedFile = data?.data //The uri with the location of the file
-
-            readFile(baseContext,selectedFile)
-            updateRecyclerView(item_list)
-        }
-
-
-//        /////// import file //////////
-        if (requestCode == 111 && resultCode == RESULT_OK) {
-            val selectedFile = data?.data //The uri with the location of the file
-            readFile(baseContext, selectedFile)
-            updateRecyclerView(item_list)
-        }
-    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -101,6 +83,7 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
             val alertDialog = dialogBuilder.create()
             alertDialog.show()
 
+
             view.alert_dialog_button.setOnClickListener{
                 val name = view.alert_dialog_text_input.text.toString()
 //              add the task to the list:
@@ -114,9 +97,6 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
 //                update the view and write file:
                 updateRecyclerView(item_list)
                 writeFile("time.txt")
-
-
-
             }
 
 
@@ -167,6 +147,29 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         return super.onOptionsItemSelected(item)
     }
 
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+
+//        /////// open file //////////
+        if (requestCode == 222 && resultCode == RESULT_OK) {
+            val selectedFile = data?.data //The uri with the location of the file
+
+            readFile(baseContext,selectedFile)
+            updateRecyclerView(item_list)
+        }
+
+
+//        /////// import file //////////
+        if (requestCode == 111 && resultCode == RESULT_OK) {
+            val selectedFile = data?.data //The uri with the location of the file
+            readFile(baseContext, selectedFile)
+            updateRecyclerView(item_list)
+        }
+    }
+
+
     private fun setupRecyclerView(recyclerView: RecyclerView) {
         recyclerView.adapter = SimpleItemRecyclerViewAdapter(this, DummyContent.ITEMS, twoPane)
     }
@@ -183,6 +186,8 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
             RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder>() {
 
         private val onClickListener: View.OnClickListener
+        private val onLongClickListener: View.OnLongClickListener
+
 
         init {
             onClickListener = View.OnClickListener { v ->
@@ -203,6 +208,33 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
                     }
                     v.context.startActivity(intent)
                 }
+            }
+
+                        onLongClickListener = View.OnLongClickListener { v ->
+                val item = v.tag as DummyContent.DummyItem
+                if (twoPane) {
+                    val fragment = ItemDetailFragment().apply {
+                        arguments = Bundle().apply {
+                            putString(ItemDetailFragment.ARG_ITEM_ID, item.id)
+                        }
+                    }
+                    parentActivity.supportFragmentManager
+                            .beginTransaction()
+                            .replace(R.id.item_detail_container, fragment)
+                            .commit()
+                } else {
+
+//                    val intent = Intent(v.context, ItemDetailActivity::class.java).apply {
+//                        putExtra(ItemDetailFragment.ARG_ITEM_ID, item.id)
+//                    }
+//                    v.context.startActivity(intent)
+
+                DummyContent.ITEMS.remove(item)
+//                parentActivity.updateRecyclerView()
+                    parentActivity.updateRecyclerView(parentActivity.item_list)
+//                    writeFile("time.txt")
+                }
+true
             }
         }
 
@@ -227,6 +259,8 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
             with(holder.itemView) {
                 tag = item
                 setOnClickListener(onClickListener)
+                setOnLongClickListener(onLongClickListener)
+
             }
         }
 

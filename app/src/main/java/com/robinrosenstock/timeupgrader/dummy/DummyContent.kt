@@ -39,9 +39,7 @@ object DummyContent {
 //    val dtrn = getContext()
         //    readFile(dtrn, )
 
-
-        File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DOCUMENTS), "time.txt").bufferedReader().use {
+        File(Environment.getExternalStoragePublicDirectory("/time"), "time.txt").bufferedReader().use {
             var line = it.readLine()
 
             while (line != null) {
@@ -74,6 +72,13 @@ object DummyContent {
         ITEMS.add(item)
         ITEM_MAP.put(item.id, item)
     }
+
+
+    private fun deleteItem(item: DummyItem) {
+        ITEMS.remove(item)
+        ITEM_MAP.remove(item.id)
+    }
+
 
 //
 //    private fun createDummyItem(position: Int): DummyItem {
