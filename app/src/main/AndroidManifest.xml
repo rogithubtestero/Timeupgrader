@@ -6,6 +6,7 @@
 
     <application
         android:allowBackup="true"
+        android:name="com.robinrosenstock.timeupgrader.AppPrefs"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -43,9 +44,17 @@
             android:label="@string/title_activity_file"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".fileopener"
-            android:label="@string/title_activity_fileopener"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:name=".MainActivity"
+            android:label="@string/title_activity_file"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
+
+
+
+
+
 </manifest>
+
+
+

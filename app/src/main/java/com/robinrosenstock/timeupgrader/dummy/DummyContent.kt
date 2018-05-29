@@ -35,9 +35,6 @@ object DummyContent {
 
 //here take the last opened file uri!!!! from sharedprefs? for readFile
 
-//        but how to get the context?
-//    val dtrn = getContext()
-        //    readFile(dtrn, )
 
         File(Environment.getExternalStoragePublicDirectory("/time"), "time.txt").bufferedReader().use {
             var line = it.readLine()
@@ -80,21 +77,21 @@ object DummyContent {
     }
 
 
-//
-//    private fun createDummyItem(position: Int): DummyItem {
-//        return DummyItem(position.toString(), "Item " + position, makeDetails(position))
-//    }
-//
-//    private fun makeDetails(position: Int): String {
-//        val builder = StringBuilder()
-//        builder.append("Details about Item: ").append(position)
-//        for (i in 0..position - 1) {
-//            builder.append("\nMore details information here.")
-//        }
-//        return builder.toString()
-//    }
-//
-//
+
+    private fun createDummyItem(position: Int): DummyItem {
+        return DummyItem(position.toString(), "Item " + position, makeDetails(position))
+    }
+
+    private fun makeDetails(position: Int): String {
+        val builder = StringBuilder()
+        builder.append("Details about Item: ").append(position)
+        for (i in 0..position - 1) {
+            builder.append("\nMore details information here.")
+        }
+        return builder.toString()
+    }
+
+
 
     /**
      * A dummy item representing a piece of content.
@@ -103,3 +100,5 @@ object DummyContent {
         override fun toString(): String = content
     }
 }
+
+

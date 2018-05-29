@@ -5,8 +5,7 @@ import android.net.Uri
 import android.os.Environment
 import com.robinrosenstock.timeupgrader.dummy.DummyContent
 import java.io.File
-
-
+import java.io.InputStream
 
 
 fun writeFile(filename: String){
@@ -36,3 +35,35 @@ fun readFile(context: Context, filename: Uri?) {
         }
     }
 }
+
+
+fun readFile(context: Context, filename: String) {
+
+
+    File(Environment.getExternalStoragePublicDirectory("/time"), filename).bufferedReader().use {
+        var line = it.readLine()
+
+        while (line != null) {
+            if (line.isNotBlank()) {
+                val neger = DummyContent.DummyItem("222", line, "details will be filled later")
+                DummyContent.ITEMS.add(neger)
+            }
+            line = it.readLine()
+        }
+    }
+    }
+
+//
+//    val input = context.getContentResolver().openInputStream()
+//    input.bufferedReader().use {
+//        var line = it.readLine()
+//
+//        while (line != null) {
+//            if (line.isNotBlank()) {
+//                val neger = DummyContent.DummyItem("222", line, "details will be filled later")
+//                DummyContent.ITEMS.add(neger)
+//            }
+//            line = it.readLine()
+//        }
+//    }
+//}

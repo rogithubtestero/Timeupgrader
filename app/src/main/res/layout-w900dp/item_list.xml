@@ -27,7 +27,7 @@
         android:layout_marginRight="16dp"
         app:layoutManager="LinearLayoutManager"
         tools:context="com.robinrosenstock.timeupgrader.ItemListActivity"
-        tools:listitem="@layout/item_list_content" />
+        tools:listitem="@layout/testlayout2" />
 
     <FrameLayout
         android:id="@+id/item_detail_container"

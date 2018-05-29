@@ -29,10 +29,10 @@ import kotlinx.android.synthetic.main.app_bar_main2.*
 import kotlinx.android.synthetic.main.activity_main2.*
 import kotlinx.android.synthetic.main.alert_dialog.*
 import kotlinx.android.synthetic.main.alert_dialog.view.*
-import kotlinx.android.synthetic.main.item_list_content.view.*
 import kotlinx.android.synthetic.main.item_list.*
 import java.io.*
 import android.app.Activity
+import android.support.v7.widget.PopupMenu
 import com.fondesa.recyclerviewdivider.RecyclerViewDivider
 import kotlinx.android.synthetic.main.testlayout2.view.*
 
@@ -71,35 +71,15 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         fab.setOnClickListener {
 
             ////// start other display/class:
-//            val intent = Intent(this, Fileactor::class.java)
+//            val intent = Intent(this, MainActivity::class.java)
 //            startActivity(intent)
 
 
 //          ////////  add a task through a custom dialog, learned from here: <https://www.youtube.com/watch?v=Z9LhAgBSlhU> /////
-            val dialogBuilder = AlertDialog.Builder(this@ItemListActivity)
-            dialogBuilder.setTitle("title")
-            dialogBuilder.setMessage("I am a alert dialog!")
-            val view = layoutInflater.inflate(R.layout.alert_dialog, null)
-            dialogBuilder.setView(view)
-            val alertDialog = dialogBuilder.create()
-            alertDialog.show()
-
-
-            view.alert_dialog_button.setOnClickListener{
-                val name = view.alert_dialog_text_input.text.toString()
-//              add the task to the list:
-                val newtask = DummyContent.DummyItem("0", name, "details will be filled later")
-                DummyContent.ITEMS.add(newtask)
-
-//                make a toast and dismiss the dialog:
-                Toast.makeText(this@ItemListActivity, name, Toast.LENGTH_LONG).show()
-                alertDialog.dismiss()
-
-//                update the view and write file:
-                updateRecyclerView(item_list)
-                writeFile("time.txt")
-            }
-
+            addNewTaskDialog()
+          ////// update the view and write file:
+            updateRecyclerView(item_list)
+            writeFile("time.txt")
 
         }
 
@@ -123,6 +103,39 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         setupRecyclerView(item_list)
     }
 
+    private fun addNewTaskDialog() {
+
+        val dialogBuilder = AlertDialog.Builder(this@ItemListActivity)
+        dialogBuilder.setTitle("Add a new task")
+//        dialogBuilder.setMessage("I am a alert dialog!")
+        val view = layoutInflater.inflate(R.layout.alert_dialog, null)
+        dialogBuilder.setView(view)
+        val alertDialog = dialogBuilder.create()
+        alertDialog.show()
+
+
+        view.alert_dialog_button.setOnClickListener{
+            val name = view.alert_dialog_text_input.text.toString()
+//              add the task to the list:
+            val newtask = DummyContent.DummyItem("0", name, "details will be filled later")
+            DummyContent.ITEMS.add(newtask)
+            DummyContent.ITEM_MAP.put(newtask.id, newtask)
+
+
+            alertDialog.dismiss()
+            Snackbar.make(it.rootView, name + " added", 5000).show()
+
+
+        }
+    }
+
+
+    override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
+        super.onCreateContextMenu(menu, v, menuInfo)
+
+        menuInflater.inflate(R.menu.menu_main, menu)
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
@@ -143,6 +156,11 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
             R.id.open_file -> startActivityForResult(Intent.createChooser(intent2, "Select a file"), 222)
             R.id.import_file -> startActivityForResult(Intent.createChooser(intent2, "Select a file"), 111)
             R.id.action_settings -> startActivity(intent1)
+            R.id.reload -> {
+                DummyContent.ITEMS.removeAll(DummyContent.ITEMS)
+                readFile(baseContext, "time.txt")
+                updateRecyclerView(item_list)}
+
             else -> super.onOptionsItemSelected(item)
         }
         return super.onOptionsItemSelected(item)
@@ -174,6 +192,7 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
     private fun setupRecyclerView(recyclerView: RecyclerView) {
         recyclerView.adapter = SimpleItemRecyclerViewAdapter(this, DummyContent.ITEMS, twoPane)
         RecyclerViewDivider.with(this).build().addTo(recyclerView)
+
     }
 
 
@@ -212,31 +231,38 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
                 }
             }
 
-                        onLongClickListener = View.OnLongClickListener { v ->
-                val item = v.tag as DummyContent.DummyItem
-                if (twoPane) {
-                    val fragment = ItemDetailFragment().apply {
-                        arguments = Bundle().apply {
-                            putString(ItemDetailFragment.ARG_ITEM_ID, item.id)
+
+
+            onLongClickListener = View.OnLongClickListener {
+                val popup = PopupMenu(this.parentActivity, it)
+                popup.setOnMenuItemClickListener { item ->
+                    when (item.itemId){
+                        R.id.rename_task -> {
+
+//                            val item2 = it.tag as DummyContent.DummyItem
+//                            DummyContent.ITEMS.remove(item2)
+                            Snackbar.make(it, "not yet implemented", 5000).show()
+
+                            true
                         }
+                        R.id.delete_task -> {
+                            val item2 = it.tag as DummyContent.DummyItem
+                            val Snackbar = Snackbar.make(it, item2.toString() + " deleted", 5000)
+                            Snackbar.setAction("undo", MyUndoListener());
+                            Snackbar.show()
+                            DummyContent.ITEMS.remove(item2)
+                            parentActivity.updateRecyclerView(parentActivity.item_list)
+                            writeFile("time.txt")
+
+                            true
+                        }
+                        else -> false
                     }
-                    parentActivity.supportFragmentManager
-                            .beginTransaction()
-                            .replace(R.id.item_detail_container, fragment)
-                            .commit()
-                } else {
-
-//                    val intent = Intent(v.context, ItemDetailActivity::class.java).apply {
-//                        putExtra(ItemDetailFragment.ARG_ITEM_ID, item.id)
-//                    }
-//                    v.context.startActivity(intent)
-
-                DummyContent.ITEMS.remove(item)
-//                parentActivity.updateRecyclerView()
-                    parentActivity.updateRecyclerView(parentActivity.item_list)
-                    writeFile("time.txt")
                 }
-true
+                popup.inflate(R.menu.context_task_menu)
+                popup.show()
+                true
+
             }
         }
 
@@ -252,11 +278,12 @@ true
             val item = values[position]
 //            holder.idView.text = item.id
             holder.contentView.text = item.content
-
             holder.buttonView.setOnClickListener {
-                Toast.makeText(this.parentActivity, "timer start for: " + item.toString(), Toast.LENGTH_LONG).show()
+                Snackbar.make(it, "timer started for: " + item.toString(), 5000).show()
+
 
             }
+
 
             with(holder.itemView) {
                 tag = item
@@ -276,7 +303,15 @@ true
     }
 
 
+    class MyUndoListener : View.OnClickListener {
 
+        override
+        fun onClick(v: View) {
+
+            Toast.makeText(v.context,"not yet implemented", Toast.LENGTH_LONG).show()
+            // Code to undo the user's last action
+        }
+    }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
