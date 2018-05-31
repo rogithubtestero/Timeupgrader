@@ -35,19 +35,7 @@ object DummyContent {
 
 //here take the last opened file uri!!!! from sharedprefs? for readFile
 
-
-        File(Environment.getExternalStoragePublicDirectory("/time"), "time.txt").bufferedReader().use {
-            var line = it.readLine()
-
-            while (line != null) {
-                if (line.isNotBlank()) {
-                    val neger = DummyContent.DummyItem("222", line, "details will be filled later")
-                    DummyContent.ITEMS.add(neger)
-                }
-                line = it.readLine()
-            }
-        }
-
+        readFile("time.txt")
 
 //        addItem(DummyItem("1", "string1", "details1"))
 //        addItem(DummyItem("2", "string2", "details2"))
@@ -96,7 +84,7 @@ object DummyContent {
     /**
      * A dummy item representing a piece of content.
      */
-    data class DummyItem(val id: String, val content: String, val details: String) {
+    data class DummyItem(val id: String, val content: String, var details: String) {
         override fun toString(): String = content
     }
 }

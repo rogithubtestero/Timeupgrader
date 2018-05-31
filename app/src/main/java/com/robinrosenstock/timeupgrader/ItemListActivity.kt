@@ -158,7 +158,7 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
             R.id.action_settings -> startActivity(intent1)
             R.id.reload -> {
                 DummyContent.ITEMS.removeAll(DummyContent.ITEMS)
-                readFile(baseContext, "time.txt")
+                readFile("time.txt")
                 updateRecyclerView(item_list)}
 
             else -> super.onOptionsItemSelected(item)

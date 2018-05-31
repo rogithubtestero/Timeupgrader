@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Color
+import net.danlew.android.joda.JodaTimeAndroid
 
 
 val prefs: Prefs by lazy {
@@ -16,8 +17,9 @@ class AppPrefs : Application() {
         var prefs: Prefs? = null
     }
 
-    override fun onCreate() {
+        override fun onCreate() {
         prefs = Prefs(applicationContext)
+            JodaTimeAndroid.init(this)
         super.onCreate()
     }
 }
