@@ -1,13 +1,7 @@
 package com.robinrosenstock.timeupgrader
 
-import android.app.Dialog
-import android.content.ContentResolver
-import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.support.design.widget.NavigationView
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
@@ -19,19 +13,14 @@ import android.support.v4.view.GravityCompat
 
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AlertDialog
-import android.util.Log
 import android.view.*
-import android.view.inputmethod.InputMethodManager
 import android.widget.*
 
-import com.robinrosenstock.timeupgrader.dummy.DummyContent
+import com.robinrosenstock.timeupgrader.dummy.TaskContent
 import kotlinx.android.synthetic.main.app_bar_main2.*
 import kotlinx.android.synthetic.main.activity_main2.*
-import kotlinx.android.synthetic.main.alert_dialog.*
 import kotlinx.android.synthetic.main.alert_dialog.view.*
 import kotlinx.android.synthetic.main.item_list.*
-import java.io.*
-import android.app.Activity
 import android.support.v7.widget.PopupMenu
 import com.fondesa.recyclerviewdivider.RecyclerViewDivider
 import kotlinx.android.synthetic.main.testlayout2.view.*
@@ -117,9 +106,9 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         view.alert_dialog_button.setOnClickListener{
             val name = view.alert_dialog_text_input.text.toString()
 //              add the task to the list:
-            val newtask = DummyContent.DummyItem("0", name, "details will be filled later")
-            DummyContent.ITEMS.add(newtask)
-            DummyContent.ITEM_MAP.put(newtask.id, newtask)
+            val newtask = TaskContent.TaskItem("0", name, ArrayList())
+            TaskContent.TASKS.add(newtask)
+            TaskContent.TASK_MAP.put(newtask.id, newtask)
 
 
             alertDialog.dismiss()
@@ -157,7 +146,7 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
             R.id.import_file -> startActivityForResult(Intent.createChooser(intent2, "Select a file"), 111)
             R.id.action_settings -> startActivity(intent1)
             R.id.reload -> {
-                DummyContent.ITEMS.removeAll(DummyContent.ITEMS)
+                TaskContent.TASKS.removeAll(TaskContent.TASKS)
                 readFile("time.txt")
                 updateRecyclerView(item_list)}
 
@@ -190,7 +179,7 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
 
 
     private fun setupRecyclerView(recyclerView: RecyclerView) {
-        recyclerView.adapter = SimpleItemRecyclerViewAdapter(this, DummyContent.ITEMS, twoPane)
+        recyclerView.adapter = SimpleItemRecyclerViewAdapter(this, TaskContent.TASKS, twoPane)
         RecyclerViewDivider.with(this).build().addTo(recyclerView)
 
     }
@@ -202,7 +191,7 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
 
 
     class SimpleItemRecyclerViewAdapter(private val parentActivity: ItemListActivity,
-                                        private val values: List<DummyContent.DummyItem>,
+                                        private val values: List<TaskContent.TaskItem>,
                                         private val twoPane: Boolean) :
             RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder>() {
 
@@ -212,7 +201,7 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
 
         init {
             onClickListener = View.OnClickListener { v ->
-                val item = v.tag as DummyContent.DummyItem
+                val item = v.tag as TaskContent.TaskItem
                 if (twoPane) {
                     val fragment = ItemDetailFragment().apply {
                         arguments = Bundle().apply {
@@ -239,18 +228,18 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
                     when (item.itemId){
                         R.id.rename_task -> {
 
-//                            val item2 = it.tag as DummyContent.DummyItem
-//                            DummyContent.ITEMS.remove(item2)
+//                            val item2 = it.tag as TaskContent.TaskItem
+//                            TaskContent.ITEMS.remove(item2)
                             Snackbar.make(it, "not yet implemented", 5000).show()
 
                             true
                         }
                         R.id.delete_task -> {
-                            val item2 = it.tag as DummyContent.DummyItem
+                            val item2 = it.tag as TaskContent.TaskItem
                             val Snackbar = Snackbar.make(it, item2.toString() + " deleted", 5000)
                             Snackbar.setAction("undo", MyUndoListener());
                             Snackbar.show()
-                            DummyContent.ITEMS.remove(item2)
+                            TaskContent.TASKS.remove(item2)
                             parentActivity.updateRecyclerView(parentActivity.item_list)
                             writeFile("time.txt")
 

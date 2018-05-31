@@ -4,24 +4,20 @@ import android.content.Context
 import android.net.Uri
 import android.os.Environment
 import android.util.Log
-import com.robinrosenstock.timeupgrader.dummy.DummyContent
+import com.robinrosenstock.timeupgrader.dummy.TaskContent
 import org.joda.time.*
 import org.joda.time.format.*
 import java.io.File
-import java.io.InputStream
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.util.*
 import org.joda.time.format.DateTimeFormat
 
 
 
 
-fun writeFile(filename: String){
+fun writeFile2(filename: String){
 
     ////// save  entry/line to the file //////////
     File(Environment.getExternalStoragePublicDirectory("/time"), filename).bufferedWriter().use { out ->
-        DummyContent.ITEMS.forEach {
+        TaskContent.TASKS.forEach {
             val date = Regex("2018-05-23")
             if (date.matches(it.content)){
 //                Log.e("out",it.content)
@@ -35,6 +31,22 @@ fun writeFile(filename: String){
 }
 
 
+fun writeFile(filename: String){
+
+    ////// save  entry/line to the file //////////
+    File(Environment.getExternalStoragePublicDirectory("/time"), filename).bufferedWriter().use { out ->
+        TaskContent.TASKS.forEach {
+
+//            Log.e("id: ", it.id)
+//            Log.e("content ", it.content)
+//            Log.e("details ", it.details)
+
+//            out.write(it.id + "\n")
+//            out.write(it.id + "\n")
+        }
+    }
+}
+
 
 fun readFile(context: Context, filename: Uri?) {
 
@@ -43,9 +55,9 @@ fun readFile(context: Context, filename: Uri?) {
         var line = it.readLine()
         while (line != null) {
             if (line.isNotBlank()) {
-                val neger = DummyContent.DummyItem("222", line, "details will be filled later")
-                DummyContent.ITEMS.add(neger)
-                DummyContent.ITEM_MAP.put(neger.id, neger)
+                val neger = TaskContent.TaskItem("222", line, ArrayList())
+                TaskContent.TASKS.add(neger)
+                TaskContent.TASK_MAP.put(neger.id, neger)
             }
             line = it.readLine()
         }
@@ -70,6 +82,7 @@ fun readFile(filename: String) {
         val time_entry_format = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")
         val only_time_format = DateTimeFormat.forPattern("HH:mm:ss")
         var new_task = ""
+
         while (line != null) {
             if (line.isNotBlank()) {
 
@@ -81,31 +94,38 @@ fun readFile(filename: String) {
                     line = it.readLine()
                     val end_time = time_entry_format.parseDateTime(line)
 
-                    val task_entry = DummyContent.DummyItem(new_task, new_task, only_time_format.print(begin_time) + "\n" + only_time_format.print(end_time))
+                    val interval_list: MutableList<TaskContent.IntervalItem> = ArrayList()
+                    interval_list.add(TaskContent.IntervalItem(begin_time, end_time))
+
+                    val task_entry = TaskContent.TaskItem(new_task, new_task, interval_list)
 
                     if (!task_already_defined(new_task)){
 //                        define task normally:
-                        DummyContent.ITEMS.add(task_entry)
-                        DummyContent.ITEM_MAP.put(task_entry.id, task_entry)
+                        TaskContent.TASKS.add(task_entry)
+                        TaskContent.TASK_MAP.put(task_entry.id, task_entry)
                     }
                     else{
-//                        else add the details to the already defined task
-                        val test = DummyContent.ITEM_MAP[new_task]
-
-                        test?.details = test?.details + "\n" + only_time_format.print(begin_time) + "\n" + only_time_format.print(end_time)
-//                        test?.details?.replace("alt", "new")
-                        val indexi = DummyContent.ITEMS.indexOf(DummyContent.ITEM_MAP[new_task])
+//                        else add another intervalItem to the interval_list of this task_entry
+//                        first get the task
+                        val test = TaskContent.TASK_MAP[new_task]
+//                        then add a new intervallItem
+                        test?.interval_list?.add(TaskContent.IntervalItem(begin_time, end_time))
 //                        Log.e("indexi: ", test?.details.toString())
-                        //                        DummyContent.ITEM_MAP.put(task_entry.id, task_entry)
-                    }
 
+
+//                        test?.details = test?.details + "\n" + only_time_format.print(begin_time) + "\n" + only_time_format.print(end_time)
+//                        test?.details?.replace("alt", "new")
+//                        val indexi = TaskContent.TASKS.indexOf(TaskContent.TASK_MAP[new_task])
+//                        Log.e("indexi: ", test?.details.toString())
+                        //                        TaskContent.TASK_MAP.put(task_entry.id, task_entry)
+                    }
 
                     new_task = ""
 
                 }
                 else{
                     new_task = line
-                    Log.e("task: ", line.toString())
+//                    Log.e("task: ", line.toString())
 
                 }
 
@@ -114,10 +134,11 @@ fun readFile(filename: String) {
             line = it.readLine()
         }
         }
+//    writeFile("time.txt")
     }
 
 fun task_already_defined(task_entry : String) : Boolean {
-    DummyContent.ITEMS.forEach {
+    TaskContent.TASKS.forEach {
         if (task_entry.equals(it.id)){
             return true
         }
@@ -133,8 +154,8 @@ fun task_already_defined(task_entry : String) : Boolean {
 //
 //        while (line != null) {
 //            if (line.isNotBlank()) {
-//                val neger = DummyContent.DummyItem("222", line, "details will be filled later")
-//                DummyContent.ITEMS.add(neger)
+//                val neger = TaskContent.TaskItem("222", line, "details will be filled later")
+//                TaskContent.ITEMS.add(neger)
 //            }
 //            line = it.readLine()
 //        }
@@ -205,9 +226,9 @@ fun readFile2(filename: String) {
 //
 //                    }
 
-                    val neger = DummyContent.DummyItem("222", line, "details will be filled later")
-                    DummyContent.ITEMS.add(neger)
-                    DummyContent.ITEM_MAP.put(neger.id, neger)
+                    val neger = TaskContent.TaskItem("222", line, ArrayList())
+                    TaskContent.TASKS.add(neger)
+                    TaskContent.TASK_MAP.put(neger.id, neger)
 
                 }
 
