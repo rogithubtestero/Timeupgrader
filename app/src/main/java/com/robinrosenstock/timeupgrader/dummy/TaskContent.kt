@@ -3,7 +3,6 @@ package com.robinrosenstock.timeupgrader.dummy
 import com.robinrosenstock.timeupgrader.readFile
 import org.joda.time.DateTime
 import org.joda.time.Interval
-import org.joda.time.LocalDate
 
 import java.util.HashMap
 import kotlin.collections.ArrayList
@@ -13,7 +12,6 @@ import kotlin.collections.ArrayList
  * Androides, see aapt output above for details.
 	at com.android.build.gradle.internal.res.LinkApplica template wizards.
  *
- * TODO: Replace all uses of this class before publishing your app.
  */
 object TaskContent {
 
@@ -102,8 +100,8 @@ object TaskContent {
     /**
      * A TaskItem is a item representing a task, which contains an id (maybe this is unnecassary?), an title (which is for now named content) and a list of Instants .
      */
-    data class TaskItem(val id: String, val content: String, val interval_list: MutableList<IntervalItem> = ArrayList()) {
-        override fun toString(): String = content
+    data class TaskItem(val id: String, val title: String, val interval_list: MutableList<IntervalItem> = ArrayList()) {
+        override fun toString(): String = title
     }
 }
 

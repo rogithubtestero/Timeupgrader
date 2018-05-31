@@ -164,7 +164,7 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         if (requestCode == 222 && resultCode == RESULT_OK) {
             val selectedFile = data?.data //The uri with the location of the file
 
-            readFile(baseContext,selectedFile)
+            import_todo_txt(baseContext,selectedFile)
             updateRecyclerView(item_list)
         }
 
@@ -172,7 +172,7 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
 //        /////// import file //////////
         if (requestCode == 111 && resultCode == RESULT_OK) {
             val selectedFile = data?.data //The uri with the location of the file
-            readFile(baseContext, selectedFile)
+            import_todo_txt(baseContext,selectedFile)
             updateRecyclerView(item_list)
         }
     }
@@ -266,7 +266,7 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val item = values[position]
 //            holder.idView.text = item.id
-            holder.contentView.text = item.content
+            holder.contentView.text = item.title
             holder.buttonView.setOnClickListener {
                 Snackbar.make(it, "timer started for: " + item.toString(), 5000).show()
 

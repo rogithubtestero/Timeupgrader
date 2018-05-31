@@ -12,43 +12,16 @@ import org.joda.time.format.DateTimeFormat
 
 
 
-
-fun writeFile2(filename: String){
-
-    ////// save  entry/line to the file //////////
-    File(Environment.getExternalStoragePublicDirectory("/time"), filename).bufferedWriter().use { out ->
-        TaskContent.TASKS.forEach {
-            val date = Regex("2018-05-23")
-            if (date.matches(it.content)){
-//                Log.e("out",it.content)
-
-            }
-//            Log.d("oh","stingsauer")
-//            Log.e("puff",it.content)
-            out.write(it.content + "\n")
-        }
-    }
-}
-
-
 fun writeFile(filename: String){
 
     ////// save  entry/line to the file //////////
-    File(Environment.getExternalStoragePublicDirectory("/time"), filename).bufferedWriter().use { out ->
-        TaskContent.TASKS.forEach {
+    val time_entry_format = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")
 
-//            Log.e("id: ", it.id)
-//            Log.e("content ", it.content)
-//            Log.e("details ", it.details)
-
-//            out.write(it.id + "\n")
-//            out.write(it.id + "\n")
-        }
-    }
+    File(Environment.getExternalStoragePublicDirectory("/time"), filename).appendText("\n" + "texttobeappended")
 }
 
 
-fun readFile(context: Context, filename: Uri?) {
+fun import_todo_txt(context: Context, filename: Uri?) {
 
     val input = context.getContentResolver().openInputStream(filename)
     input.bufferedReader().use {
@@ -64,15 +37,6 @@ fun readFile(context: Context, filename: Uri?) {
     }
 }
 
-
-fun isValidDatum(test : String): Boolean {
-    try {
-        ISODateTimeFormat.date().parseDateTime(test)
-        return true
-    } catch (e: IllegalArgumentException) {
-        return false
-    }
-}
 
 
 fun readFile(filename: String) {
@@ -134,7 +98,6 @@ fun readFile(filename: String) {
             line = it.readLine()
         }
         }
-//    writeFile("time.txt")
     }
 
 fun task_already_defined(task_entry : String) : Boolean {
@@ -142,100 +105,8 @@ fun task_already_defined(task_entry : String) : Boolean {
         if (task_entry.equals(it.id)){
             return true
         }
-        }
+    }
     return false
 }
 
 
-//
-//    val input = context.getContentResolver().openInputStream()
-//    input.bufferedReader().use {
-//        var line = it.readLine()
-//
-//        while (line != null) {
-//            if (line.isNotBlank()) {
-//                val neger = TaskContent.TaskItem("222", line, "details will be filled later")
-//                TaskContent.ITEMS.add(neger)
-//            }
-//            line = it.readLine()
-//        }
-//    }
-//}
-
-
-
-
-
-
-fun readFile2(filename: String) {
-
-
-
-    File(Environment.getExternalStoragePublicDirectory("/time"), filename).bufferedReader().use {
-        var line = it.readLine()
-        var new_date = false
-        val date_iso_format = ISODateTimeFormat.date()
-        var date_line : LocalDate = LocalDate()
-
-        while (line != null) {
-            if (line.isNotBlank()) {
-
-
-                if(isValidDatum(line)){
-                    new_date = true
-                    date_line = LocalDate(line)
-                    Log.e("date_line: ", date_line.toString())
-                }
-
-
-                if(new_date){
-//                    create a new catergory_date from the date
-                    new_date = false
-                }
-                else {
-//                    /////// evalute the coressponding task to the date
-
-                    val splitet_line = line.split(",")
-
-
-
-                    val begin_time = LocalTime(splitet_line[0].trim())
-                    val end_time = LocalTime(splitet_line[1].trim())
-                    val title_content = splitet_line[2]
-//                    Log.e("begin_time: ", begin_time.toString())
-//                    Log.e("end_time: ", end_time.toString())
-
-//                    begin_time.toDateTimeToday()
-
-
-                    val formatter = DateTimeFormat.forPattern("HH:mm:ss")
-                    val dt = formatter.parseDateTime(splitet_line[0].trim())
-//                    Log.e("begin_time: ", dt.toString())
-//
-//
-                    val nigger1 = date_line.toLocalDateTime(begin_time).toDateTime()
-                    val nigger2 = date_line.toLocalDateTime(end_time).toDateTime()
-
-                    val uiae = Interval(nigger1, nigger2)
-                    Log.e("Interval: ", uiae.toString())
-                    val dura = uiae.toDuration().standardSeconds
-                    Log.e("Duration: ", dura.toString())
-
-
-//                    if (task_regex.matches(line)){
-//
-//                    }
-
-                    val neger = TaskContent.TaskItem("222", line, ArrayList())
-                    TaskContent.TASKS.add(neger)
-                    TaskContent.TASK_MAP.put(neger.id, neger)
-
-                }
-
-
-
-            }
-            line = it.readLine()
-        }
-    }
-}
