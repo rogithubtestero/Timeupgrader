@@ -2,6 +2,7 @@ package com.robinrosenstock.timeupgrader
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Environment
 import android.support.design.widget.NavigationView
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
@@ -24,6 +25,8 @@ import kotlinx.android.synthetic.main.item_list.*
 import android.support.v7.widget.PopupMenu
 import com.fondesa.recyclerviewdivider.RecyclerViewDivider
 import kotlinx.android.synthetic.main.testlayout2.view.*
+import org.joda.time.format.DateTimeFormat
+import java.io.File
 
 
 /**
@@ -63,12 +66,10 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
 //            val intent = Intent(this, MainActivity::class.java)
 //            startActivity(intent)
 
-
 //          ////////  add a task through a custom dialog, learned from here: <https://www.youtube.com/watch?v=Z9LhAgBSlhU> /////
             addNewTaskDialog()
-          ////// update the view and write file:
             updateRecyclerView(item_list)
-            writeFile("time.txt")
+
 
         }
 
@@ -104,15 +105,18 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
 
 
         view.alert_dialog_button.setOnClickListener{
-            val name = view.alert_dialog_text_input.text.toString()
-//              add the task to the list:
-            val newtask = TaskContent.TaskItem("0", name, ArrayList())
-            TaskContent.TASKS.add(newtask)
-            TaskContent.TASK_MAP.put(newtask.id, newtask)
+            val new_task = view.alert_dialog_text_input.text.toString()
+            val task_entry = TaskContent.TaskItem(new_task, new_task, ArrayList())
+            TaskContent.TASKS.add(task_entry)
+            TaskContent.TASK_MAP.put(task_entry.id, task_entry)
+
+//            append the new task to the file:
+//            val time_entry_format = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")
+            File(Environment.getExternalStoragePublicDirectory("/time"), "time.txt").appendText("\n" + new_task)
 
 
             alertDialog.dismiss()
-            Snackbar.make(it.rootView, name + " added", 5000).show()
+            Snackbar.make(it.rootView, new_task + " added", 5000).show()
 
 
         }
@@ -241,7 +245,7 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
                             Snackbar.show()
                             TaskContent.TASKS.remove(item2)
                             parentActivity.updateRecyclerView(parentActivity.item_list)
-                            writeFile("time.txt")
+//                            writeFile("time.txt")
 
                             true
                         }
@@ -265,14 +269,14 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val item = values[position]
-//            holder.idView.text = item.id
             holder.contentView.text = item.title
             holder.buttonView.setOnClickListener {
+
+//                search for the title entry and append the first on the lower end
+//                item.title
                 Snackbar.make(it, "timer started for: " + item.toString(), 5000).show()
 
-
             }
-
 
             with(holder.itemView) {
                 tag = item

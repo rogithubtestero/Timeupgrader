@@ -3,6 +3,7 @@ package com.robinrosenstock.timeupgrader.dummy
 import com.robinrosenstock.timeupgrader.readFile
 import org.joda.time.DateTime
 import org.joda.time.Interval
+import org.joda.time.format.DateTimeFormat
 
 import java.util.HashMap
 import kotlin.collections.ArrayList
@@ -76,7 +77,10 @@ object TaskContent {
 //    }
 
 
-    class IntervalItem(val begin_time: DateTime, val end_time: DateTime){
+    class IntervalItem(val begin_time: DateTime?, val end_time: DateTime?){
+
+
+        val only_time_format = DateTimeFormat.forPattern("HH:mm:ss")
 
 
         fun getInterval() : Interval{
@@ -84,13 +88,23 @@ object TaskContent {
         }
 
 
+        fun getTimeFormatted(time : DateTime?) : String? {
 
-        override fun toString(): String = begin_time.toString()
 
-        //                    only_time_format.print(begin_time) + "\n" + only_time_format.print(end_time)
+            //            here the formatter must come in!
+            return time?.toString(only_time_format)
+//            + "\n" + time.print(end_time)
+
+        }
+
+
 
 //        override fun toString(): String {
-//            here the formatter must come in!
+//            begin_time.toString()
+//        }
+
+
+//        override fun toString(): String {
 //            return super.toString()
 //        }
     }

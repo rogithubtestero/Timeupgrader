@@ -40,10 +40,34 @@ class ItemDetailFragment : Fragment() {
                               savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.item_detail, container, false)
 
-        // Show the dummy content as text in a TextView.
-        item?.let {
-            rootView.item_detail.text = it.interval_list.toString()
+
+        val builder = StringBuilder()
+//        for (text in item?.interval_list.toString()) {
+//            builder.append(text + "\n")
+//        }
+
+        item?.interval_list?.forEach { intervalItem ->
+            builder.append(intervalItem.getTimeFormatted(intervalItem.begin_time) + "\n")
+            builder.append(intervalItem.getTimeFormatted(intervalItem.end_time) + "\n")
+            builder.append("\n")
         }
+
+
+        rootView.item_detail.text = builder.toString()
+
+
+        // Show the dummy content as text in a TextView.
+//        item?.let {
+
+
+
+
+//            rootView.item_detail.text = it.interval_list.joinToString()
+
+//            it.interval_list.forEach {
+//                rootView.item_detail.text = it.toString()
+//            }
+//        }
 
         return rootView
     }
