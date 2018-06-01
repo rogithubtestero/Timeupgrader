@@ -31,6 +31,10 @@ class Prefs (context: Context) {
     val BACKGROUND_COLOR = "background_color"
     val prefs: SharedPreferences = context.getSharedPreferences(PREFS_FILENAME, 0);
 
+    var end_line_number: Int
+        get() = prefs.getInt(BACKGROUND_COLOR, Color.BLACK)
+        set(value) = prefs.edit().putInt(BACKGROUND_COLOR, value).apply()
+
     var bgColor: Int
         get() = prefs.getInt(BACKGROUND_COLOR, Color.BLACK)
         set(value) = prefs.edit().putInt(BACKGROUND_COLOR, value).apply()

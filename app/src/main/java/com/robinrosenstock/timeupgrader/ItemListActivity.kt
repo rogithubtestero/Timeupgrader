@@ -25,7 +25,7 @@ import kotlinx.android.synthetic.main.item_list.*
 import android.support.v7.widget.PopupMenu
 import com.fondesa.recyclerviewdivider.RecyclerViewDivider
 import kotlinx.android.synthetic.main.testlayout2.view.*
-import org.joda.time.format.DateTimeFormat
+import org.joda.time.DateTime
 import java.io.File
 
 
@@ -52,6 +52,7 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
 
         setSupportActionBar(toolbar)
         toolbar.title = title
+
 
 
 //        /////////////Default snackbar://////////
@@ -106,9 +107,9 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
 
         view.alert_dialog_button.setOnClickListener{
             val new_task = view.alert_dialog_text_input.text.toString()
-            val task_entry = TaskContent.TaskItem(new_task, new_task, ArrayList())
+            val task_entry = TaskContent.TaskItem(new_task, new_task, ArrayList(), ArrayList())
             TaskContent.TASKS.add(task_entry)
-            TaskContent.TASK_MAP.put(task_entry.id, task_entry)
+            TaskContent.TASK_MAP.put(task_entry.id!!, task_entry)
 
 //            append the new task to the file:
 //            val time_entry_format = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")
@@ -151,8 +152,9 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
             R.id.action_settings -> startActivity(intent1)
             R.id.reload -> {
                 TaskContent.TASKS.removeAll(TaskContent.TASKS)
-                readFile("time.txt")
-                updateRecyclerView(item_list)}
+                parseFile("time.txt")
+                updateRecyclerView(item_list)
+            }
 
             else -> super.onOptionsItemSelected(item)
         }
@@ -185,6 +187,9 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
     private fun setupRecyclerView(recyclerView: RecyclerView) {
         recyclerView.adapter = SimpleItemRecyclerViewAdapter(this, TaskContent.TASKS, twoPane)
         RecyclerViewDivider.with(this).build().addTo(recyclerView)
+
+
+
 
     }
 
@@ -261,6 +266,7 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
 
 
 
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val view = LayoutInflater.from(parent.context)
                     .inflate(R.layout.testlayout2, parent, false)
@@ -270,11 +276,60 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val item = values[position]
             holder.contentView.text = item.title
-            holder.buttonView.setOnClickListener {
 
-//                search for the title entry and append the first on the lower end
-//                item.title
-                Snackbar.make(it, "timer started for: " + item.toString(), 5000).show()
+item.interval_list.forEach {
+    if (it.end_time == null) {
+        holder.buttonView.isChecked = true
+    }
+    else{
+        holder.buttonView.isChecked =false
+    }
+}
+
+            holder.buttonView.setOnCheckedChangeListener { buttonView, isChecked ->
+
+                if(isChecked) {
+//                    start the timer
+                    val start_time = DateTime.now()
+                    Snackbar.make(buttonView, item.toString() + " GO!", 4000).show()
+
+
+//                    val puff = TaskContent.IntervalItem(start_time, null).both(start_time)
+
+//                    File(Environment.getExternalStoragePublicDirectory("/time"), "time.txt").appendText( "\n" + "\n"+ item.title+ "\n" + puff)
+                }
+                else{
+//                    stop the timer
+                    val stop_time : DateTime? = DateTime.now()
+
+
+                    var online : Int?
+//                    search in the interval_list where the end_time is null and substitute it
+                    item.interval_list.forEach {
+                        if (it.end_time == null){
+                            it.end_time = stop_time
+                          online = it.begin_time_number
+                            val wholeFile = readFileAsWhole("time.txt")
+//                            use the line number for substituting
+                            val ff = File(Environment.getExternalStoragePublicDirectory("/time"), "time.txt")
+                            val list = ff.readLines().toMutableList()
+//                            val gg = list.get(online!!)
+                            list[online!!] = it.getTimeFormatted2(stop_time)!!
+                            val writinglist = list.joinToString("\n")
+                            ff.writeText(writinglist)
+
+                        }
+                    }
+
+
+//                    val puff2 = TaskContent.IntervalItem(null, stop_time).both(stop_time)
+
+                    Snackbar.make(buttonView, item.toString() + " STOP!", 4000).show()
+//                    File(Environment.getExternalStoragePublicDirectory("/time"), "time.txt").appendText( "\n"+ puff2)
+                }
+
+
+
 
             }
 
@@ -291,7 +346,7 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 //            val idView: TextView = view.id_text
             val contentView: TextView = view.content
-            val buttonView: Button = view.push_button
+            val buttonView: ToggleButton = view.push_button
         }
     }
 

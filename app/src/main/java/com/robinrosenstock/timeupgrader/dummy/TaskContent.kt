@@ -1,6 +1,6 @@
 package com.robinrosenstock.timeupgrader.dummy
 
-import com.robinrosenstock.timeupgrader.readFile
+import com.robinrosenstock.timeupgrader.parseFile
 import org.joda.time.DateTime
 import org.joda.time.Interval
 import org.joda.time.format.DateTimeFormat
@@ -30,9 +30,9 @@ object TaskContent {
 
     init {
 
-//here take the last opened file uri!!!! from sharedprefs? for readFile
+//here take the last opened file uri!!!! from sharedprefs? for parseFile
 
-        readFile("time.txt")
+        parseFile("time.txt")
 
 //        addItem(TaskItem("1", "string1", "details1"))
 //        addItem(TaskItem("2", "string2", "details2"))
@@ -52,7 +52,7 @@ object TaskContent {
 
     private fun addItem(item: TaskItem) {
         TASKS.add(item)
-        TASK_MAP.put(item.id, item)
+        TASK_MAP.put(item.id!!, item)
     }
 
 
@@ -77,9 +77,10 @@ object TaskContent {
 //    }
 
 
-    class IntervalItem(val begin_time: DateTime?, val end_time: DateTime?){
+    class IntervalItem(var begin_time: DateTime?, var end_time: DateTime?, var begin_time_number: Int?, var end_time_number : Int?){
 
 
+        val time_entry_format = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")
         val only_time_format = DateTimeFormat.forPattern("HH:mm:ss")
 
 
@@ -87,14 +88,24 @@ object TaskContent {
            return Interval(begin_time, end_time)
         }
 
+//        fun isOngoing(): Boolean{
+////            if (end_time != null) true else false
+//            val mu = getInterval().end
+//            mu
+//        }
 
-        fun getTimeFormatted(time : DateTime?) : String? {
 
+        fun getTimeFormatted(timeinstant: DateTime?) : String? {
 
             //            here the formatter must come in!
-            return time?.toString(only_time_format)
-//            + "\n" + time.print(end_time)
+            return timeinstant?.toString(only_time_format) ?: "-->"
+        }
 
+
+        fun getTimeFormatted2(timeinstant: DateTime?) : String? {
+
+            //            here the formatter must come in!
+            return timeinstant?.toString(time_entry_format) ?: "-->"
         }
 
 
@@ -114,8 +125,13 @@ object TaskContent {
     /**
      * A TaskItem is a item representing a task, which contains an id (maybe this is unnecassary?), an title (which is for now named content) and a list of Instants .
      */
-    data class TaskItem(val id: String, val title: String, val interval_list: MutableList<IntervalItem> = ArrayList()) {
-        override fun toString(): String = title
+    data class TaskItem(val id: String?, val title: String?,
+                        val interval_list: MutableList<IntervalItem> = ArrayList(),
+                        val task_number_list: MutableList<Int?> = ArrayList()) {
+        override fun toString(): String
+        {
+            return title ?: "undefined"
+        }
     }
 }
 
