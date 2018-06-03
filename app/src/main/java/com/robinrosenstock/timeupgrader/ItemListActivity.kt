@@ -14,6 +14,7 @@ import android.support.v4.view.GravityCompat
 
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AlertDialog
+import android.support.v7.widget.DividerItemDecoration
 import android.view.*
 import android.widget.*
 
@@ -23,10 +24,10 @@ import kotlinx.android.synthetic.main.activity_main2.*
 import kotlinx.android.synthetic.main.alert_dialog.view.*
 import kotlinx.android.synthetic.main.item_list.*
 import android.support.v7.widget.PopupMenu
-import com.fondesa.recyclerviewdivider.RecyclerViewDivider
 import kotlinx.android.synthetic.main.testlayout2.view.*
+import org.jetbrains.anko.contentView
 import org.joda.time.DateTime
-import java.io.File
+import java.io.*
 
 
 /**
@@ -69,10 +70,14 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
 
 //          ////////  add a task through a custom dialog, learned from here: <https://www.youtube.com/watch?v=Z9LhAgBSlhU> /////
             addNewTaskDialog()
-            updateRecyclerView(item_list)
 
 
+
+//            Snackbar.make(it.rootView, " ADDED!", 4000).show()
+
+//            updateRecyclerView(findViewById(R.id.item_list))
         }
+
 
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
@@ -91,6 +96,7 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
             twoPane = true
         }
 
+        parseFile("time.txt")
         setupRecyclerView(item_list)
     }
 
@@ -101,26 +107,42 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
 //        dialogBuilder.setMessage("I am a alert dialog!")
         val view = layoutInflater.inflate(R.layout.alert_dialog, null)
         dialogBuilder.setView(view)
+
         val alertDialog = dialogBuilder.create()
+
         alertDialog.show()
 
 
         view.alert_dialog_button.setOnClickListener{
             val new_task = view.alert_dialog_text_input.text.toString()
-            val task_entry = TaskContent.TaskItem(new_task, new_task, ArrayList(), ArrayList())
+            val task_entry = TaskContent.TaskItem(new_task, new_task, ArrayList(), 5)
             TaskContent.TASKS.add(task_entry)
-            TaskContent.TASK_MAP.put(task_entry.id!!, task_entry)
+            TaskContent.TASK_MAP.put(task_entry.id.toString(), task_entry)
 
 //            append the new task to the file:
 //            val time_entry_format = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")
-            File(Environment.getExternalStoragePublicDirectory("/time"), "time.txt").appendText("\n" + new_task)
+            File(Environment.getExternalStoragePublicDirectory("/time"), "time.txt").appendText("\n\n" + "# " + new_task)
 
+//            Snackbar.make(view.rootView, " ADDED!", 4000).show()
 
             alertDialog.dismiss()
-            Snackbar.make(it.rootView, new_task + " added", 5000).show()
 
+            TaskContent.TASKS.removeAll(TaskContent.TASKS)
+            TaskContent.TASK_MAP.clear()
+            parseFile("time.txt")
+            setupRecyclerView(findViewById(R.id.item_list))
+
+//            Snackbar.make(view, "view", 4000)
+//            Snackbar.make(view.rootView, "view", 4000)
+//            Snackbar.make(it.rootView, new_task + " ADDED!", 4000).show()
+            Snackbar.make(it, new_task + " ADDED!", 4000).show()
 
         }
+
+
+
+
+
     }
 
 
@@ -152,8 +174,16 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
             R.id.action_settings -> startActivity(intent1)
             R.id.reload -> {
                 TaskContent.TASKS.removeAll(TaskContent.TASKS)
+                TaskContent.TASK_MAP.clear()
                 parseFile("time.txt")
-                updateRecyclerView(item_list)
+//                updateRecyclerView(findViewById(R.id.item_list))
+                setupRecyclerView(findViewById(R.id.item_list))
+
+//                val muh = findViewById<RecyclerView>(R.id.item_list)
+
+//                muh.adapter.data
+
+
             }
 
             else -> super.onOptionsItemSelected(item)
@@ -171,7 +201,10 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
             val selectedFile = data?.data //The uri with the location of the file
 
             import_todo_txt(baseContext,selectedFile)
-            updateRecyclerView(item_list)
+//            updateRecyclerView(item_list)
+            updateRecyclerView(findViewById(R.id.item_list))
+
+
         }
 
 
@@ -179,18 +212,18 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         if (requestCode == 111 && resultCode == RESULT_OK) {
             val selectedFile = data?.data //The uri with the location of the file
             import_todo_txt(baseContext,selectedFile)
-            updateRecyclerView(item_list)
+//            updateRecyclerView(item_list)
+            updateRecyclerView(findViewById(R.id.item_list))
+
         }
     }
 
 
     private fun setupRecyclerView(recyclerView: RecyclerView) {
         recyclerView.adapter = SimpleItemRecyclerViewAdapter(this, TaskContent.TASKS, twoPane)
-        RecyclerViewDivider.with(this).build().addTo(recyclerView)
 
-
-
-
+        val dividerItemDecoration = DividerItemDecoration(recyclerView.context,1 )
+        recyclerView.addItemDecoration(dividerItemDecoration)
     }
 
 
@@ -214,7 +247,7 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
                 if (twoPane) {
                     val fragment = ItemDetailFragment().apply {
                         arguments = Bundle().apply {
-                            putString(ItemDetailFragment.ARG_ITEM_ID, item.id)
+                            putString(ItemDetailFragment.ARG_ITEM_ID, item.id.toString())
                         }
                     }
                     parentActivity.supportFragmentManager
@@ -277,57 +310,78 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
             val item = values[position]
             holder.contentView.text = item.title
 
-item.interval_list.forEach {
-    if (it.end_time == null) {
-        holder.buttonView.isChecked = true
-    }
-    else{
-        holder.buttonView.isChecked =false
-    }
-}
+
+            item.interval_list.forEach {
+                if (it.end_time == null) {
+                    holder.buttonView.isChecked = true
+                }
+                else{
+                    holder.buttonView.isChecked =false
+                }
+            }
+
 
             holder.buttonView.setOnCheckedChangeListener { buttonView, isChecked ->
 
                 if(isChecked) {
-//                    start the timer
+
                     val start_time = DateTime.now()
-                    Snackbar.make(buttonView, item.toString() + " GO!", 4000).show()
+
+                    val eins : Int?
+                    val zwei : Int?
+                    val intervalItem: TaskContent.IntervalItem
 
 
-//                    val puff = TaskContent.IntervalItem(start_time, null).both(start_time)
+                    if (item.interval_list.size > 0){
 
-//                    File(Environment.getExternalStoragePublicDirectory("/time"), "time.txt").appendText( "\n" + "\n"+ item.title+ "\n" + puff)
-                }
-                else{
-//                    stop the timer
-                    val stop_time : DateTime? = DateTime.now()
+                        eins = item.interval_list.last().begin_time_number
+                        zwei = item.interval_list.last().end_time_number
+                        intervalItem = TaskContent.IntervalItem(start_time, null, eins!!.plus(3), eins!!.plus(4))
+                        addIntervalItemToFile("time.txt", intervalItem, item.interval_list.last().end_time_number)
 
 
-                    var online : Int?
-//                    search in the interval_list where the end_time is null and substitute it
-                    item.interval_list.forEach {
-                        if (it.end_time == null){
-                            it.end_time = stop_time
-                          online = it.begin_time_number
-                            val wholeFile = readFileAsWhole("time.txt")
-//                            use the line number for substituting
-                            val ff = File(Environment.getExternalStoragePublicDirectory("/time"), "time.txt")
-                            val list = ff.readLines().toMutableList()
-//                            val gg = list.get(online!!)
-                            list[online!!] = it.getTimeFormatted2(stop_time)!!
-                            val writinglist = list.joinToString("\n")
-                            ff.writeText(writinglist)
+                    }else{
+                        eins = item.line_number
+                        intervalItem = TaskContent.IntervalItem(start_time, null, eins!!.plus(2), eins!!.plus(3))
+                        addIntervalItemToFile("time.txt", intervalItem, item.line_number)
 
-                        }
                     }
 
+                    item.interval_list.add(intervalItem)
 
-//                    val puff2 = TaskContent.IntervalItem(null, stop_time).both(stop_time)
+                    Snackbar.make(buttonView, item.toString() + " GO!", 4000).show()
+
+                    TaskContent.TASKS.removeAll(TaskContent.TASKS)
+                    TaskContent.TASK_MAP.clear()
+                    parseFile("time.txt")
+                    parentActivity.setupRecyclerView(parentActivity.findViewById(R.id.item_list))
+
+
+
+//                    use the line number from the clicked task
+//                    val linenumberfromthetask = item.task_number_list[0]
+
+//                    val puff = TaskContent.IntervalItem(begin_time, null, 1, 2).both(begin_time)
+//                    File(Environment.getExternalStoragePublicDirectory("/time"), "time.txt").appendText( "\n" + puff)
+
+                }
+                else{
+
+
+                    val ongoingIntervalItem = searchOngoingIntervalItem(item)
+                    ongoingIntervalItem!!.end_time = DateTime.now()
+                    val linenumber = ongoingIntervalItem.end_time_number
+                    val text = ongoingIntervalItem.getTimeFormatted2(ongoingIntervalItem.end_time)
 
                     Snackbar.make(buttonView, item.toString() + " STOP!", 4000).show()
-//                    File(Environment.getExternalStoragePublicDirectory("/time"), "time.txt").appendText( "\n"+ puff2)
-                }
+                    replaceLineInFile("time.txt", linenumber, text)
 
+                    TaskContent.TASKS.removeAll(TaskContent.TASKS)
+                    TaskContent.TASK_MAP.clear()
+                    parseFile("time.txt")
+                    parentActivity.setupRecyclerView(parentActivity.findViewById(R.id.item_list))
+
+                }
 
 
 

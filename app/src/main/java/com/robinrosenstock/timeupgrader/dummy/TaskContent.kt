@@ -32,7 +32,7 @@ object TaskContent {
 
 //here take the last opened file uri!!!! from sharedprefs? for parseFile
 
-        parseFile("time.txt")
+//        parseFile("time.txt")
 
 //        addItem(TaskItem("1", "string1", "details1"))
 //        addItem(TaskItem("2", "string2", "details2"))
@@ -52,13 +52,13 @@ object TaskContent {
 
     private fun addItem(item: TaskItem) {
         TASKS.add(item)
-        TASK_MAP.put(item.id!!, item)
+        TASK_MAP.put(item.id.toString(), item)
     }
 
 
     private fun deleteItem(item: TaskItem) {
         TASKS.remove(item)
-        TASK_MAP.remove(item.id)
+        TASK_MAP.remove(item.id.toString())
     }
 
 
@@ -109,6 +109,10 @@ object TaskContent {
         }
 
 
+        fun both(time: DateTime?): String? {
+            return time?.toString(time_entry_format) ?: "-->"
+        }
+
 
 //        override fun toString(): String {
 //            begin_time.toString()
@@ -125,14 +129,19 @@ object TaskContent {
     /**
      * A TaskItem is a item representing a task, which contains an id (maybe this is unnecassary?), an title (which is for now named content) and a list of Instants .
      */
-    data class TaskItem(val id: String?, val title: String?,
-                        val interval_list: MutableList<IntervalItem> = ArrayList(),
-                        val task_number_list: MutableList<Int?> = ArrayList()) {
+    data class TaskItem(val id: String,
+                        val title: String,
+                        val interval_list: MutableList<IntervalItem>,
+                        val line_number : Int) {
+
+
         override fun toString(): String
         {
+//            return title ?: "undefined"
             return title ?: "undefined"
         }
     }
+
 }
 
 
