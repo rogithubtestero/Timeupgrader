@@ -84,44 +84,22 @@ object TaskContent {
         val only_time_format = DateTimeFormat.forPattern("HH:mm:ss")
 
 
-        fun getInterval() : Interval{
-           return Interval(begin_time, end_time)
-        }
 
-//        fun isOngoing(): Boolean{
-////            if (end_time != null) true else false
-//            val mu = getInterval().end
-//            mu
-//        }
-
-
-        fun getTimeFormatted(timeinstant: DateTime?) : String? {
+        fun getBeginTimeFormatted() : String? {
 
             //            here the formatter must come in!
-            return timeinstant?.toString(only_time_format) ?: "-->"
+            return this.begin_time?.toString(time_entry_format) ?: "<--"
         }
 
 
-        fun getTimeFormatted2(timeinstant: DateTime?) : String? {
+        fun getEndTimeFormatted() : String? {
 
             //            here the formatter must come in!
-            return timeinstant?.toString(time_entry_format) ?: "-->"
+            return this.end_time?.toString(time_entry_format) ?: "-->"
+
         }
 
 
-        fun both(time: DateTime?): String? {
-            return time?.toString(time_entry_format) ?: "-->"
-        }
-
-
-//        override fun toString(): String {
-//            begin_time.toString()
-//        }
-
-
-//        override fun toString(): String {
-//            return super.toString()
-//        }
     }
 
 

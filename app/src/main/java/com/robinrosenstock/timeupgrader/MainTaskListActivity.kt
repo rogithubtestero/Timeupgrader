@@ -1,10 +1,14 @@
 package com.robinrosenstock.timeupgrader
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Environment
 import android.support.design.widget.NavigationView
 import android.support.design.widget.Snackbar
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 
@@ -27,6 +31,7 @@ import android.support.v7.widget.PopupMenu
 import kotlinx.android.synthetic.main.testlayout2.view.*
 import org.jetbrains.anko.contentView
 import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
 import java.io.*
 
 
@@ -45,6 +50,8 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
      * device.
      */
     private var twoPane: Boolean = false
+
+    var MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE : Int = 0
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -96,9 +103,104 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
             twoPane = true
         }
 
-        parseFile("time.txt")
-        setupRecyclerView(item_list)
+
+//        if first start of app then make the time.txt file:
+
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Permission is not (yet) granted
+
+//            Toast.makeText(baseContext, "Permission is not (yet) granted", Toast.LENGTH_LONG).show()
+
+            // Should we show an explanation?
+//            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+//                            Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+//                // Show an explanation to the user *asynchronously* -- don't block
+//            Toast.makeText(baseContext, "muffPutter", Toast.LENGTH_LONG).show()
+//
+//                // this thread waiting for the user's response! After the user
+//                // sees the explanation, try again to request the permission.
+//            } else {
+
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(this,
+                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                        MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE)
+
+                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+//            }
+        } else {
+            // Permission has already been granted
+
+            val filedirectory = Environment.getExternalStoragePublicDirectory("/time")
+            val file = File(filedirectory, "time.txt")
+
+
+            if (file.canWrite()) {
+                parseFile("time.txt")
+
+            }
+            else{
+                filedirectory.mkdirs()
+                file.createNewFile()
+            }
+
+            setupRecyclerView(findViewById(R.id.item_list))
+        }
+
+
+
     }
+
+
+
+override fun onRequestPermissionsResult(requestCode: Int,
+                                        permissions: Array<String>, grantResults: IntArray) {
+    when (requestCode) {
+        MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE -> {
+            // If request is cancelled, the result arrays are empty.
+            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+
+                // permission was granted, yay!
+
+                val filedirectory = Environment.getExternalStoragePublicDirectory("/time")
+                val file = File(filedirectory, "time.txt")
+
+
+                if (file.canWrite()) {
+                    parseFile("time.txt")
+
+                }
+                else{
+                    filedirectory.mkdirs()
+                    file.createNewFile()
+                }
+
+                setupRecyclerView(findViewById(R.id.item_list))
+
+
+            } else {
+                // permission denied, boo! Disable the
+                // functionality that depends on this permission.
+            }
+            return
+        }
+
+    // Add other 'when' lines to check for other
+    // permissions this app might request.
+        else -> {
+            // Ignore all other requests.
+        }
+    }
+}
+
+
+
+
+
 
     private fun addNewTaskDialog() {
 
@@ -127,11 +229,10 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
 
             alertDialog.dismiss()
 
-            TaskContent.TASKS.removeAll(TaskContent.TASKS)
-            TaskContent.TASK_MAP.clear()
-            parseFile("time.txt")
+            reLoad()
             setupRecyclerView(findViewById(R.id.item_list))
 
+//            todo: this snackbar is not working?
 //            Snackbar.make(view, "view", 4000)
 //            Snackbar.make(view.rootView, "view", 4000)
 //            Snackbar.make(it.rootView, new_task + " ADDED!", 4000).show()
@@ -173,17 +274,8 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
             R.id.import_file -> startActivityForResult(Intent.createChooser(intent2, "Select a file"), 111)
             R.id.action_settings -> startActivity(intent1)
             R.id.reload -> {
-                TaskContent.TASKS.removeAll(TaskContent.TASKS)
-                TaskContent.TASK_MAP.clear()
-                parseFile("time.txt")
-//                updateRecyclerView(findViewById(R.id.item_list))
+                reLoad()
                 setupRecyclerView(findViewById(R.id.item_list))
-
-//                val muh = findViewById<RecyclerView>(R.id.item_list)
-
-//                muh.adapter.data
-
-
             }
 
             else -> super.onOptionsItemSelected(item)
@@ -278,12 +370,11 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
                         }
                         R.id.delete_task -> {
                             val item2 = it.tag as TaskContent.TaskItem
-                            val Snackbar = Snackbar.make(it, item2.toString() + " deleted", 5000)
-                            Snackbar.setAction("undo", MyUndoListener());
-                            Snackbar.show()
-                            TaskContent.TASKS.remove(item2)
-                            parentActivity.updateRecyclerView(parentActivity.item_list)
-//                            writeFile("time.txt")
+
+                            val snackbar = Snackbar.make(it, item2.toString() + " DELETED!", 5000)
+                            snackbar.setAction("undo", MyUndoListener())
+                            snackbar.show()
+
 
                             true
                         }
@@ -339,52 +430,30 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
                         intervalItem = TaskContent.IntervalItem(start_time, null, eins!!.plus(3), eins!!.plus(4))
                         addIntervalItemToFile("time.txt", intervalItem, item.interval_list.last().end_time_number)
 
-
                     }else{
+
                         eins = item.line_number
                         intervalItem = TaskContent.IntervalItem(start_time, null, eins!!.plus(2), eins!!.plus(3))
                         addIntervalItemToFile("time.txt", intervalItem, item.line_number)
 
                     }
 
-                    item.interval_list.add(intervalItem)
-
-                    Snackbar.make(buttonView, item.toString() + " GO!", 4000).show()
-
-                    TaskContent.TASKS.removeAll(TaskContent.TASKS)
-                    TaskContent.TASK_MAP.clear()
-                    parseFile("time.txt")
+                    reLoad()
+                    Snackbar.make(buttonView, item.toString() + " START!", 4000).show()
                     parentActivity.setupRecyclerView(parentActivity.findViewById(R.id.item_list))
-
-
-
-//                    use the line number from the clicked task
-//                    val linenumberfromthetask = item.task_number_list[0]
-
-//                    val puff = TaskContent.IntervalItem(begin_time, null, 1, 2).both(begin_time)
-//                    File(Environment.getExternalStoragePublicDirectory("/time"), "time.txt").appendText( "\n" + puff)
 
                 }
                 else{
-
-
                     val ongoingIntervalItem = searchOngoingIntervalItem(item)
                     ongoingIntervalItem!!.end_time = DateTime.now()
                     val linenumber = ongoingIntervalItem.end_time_number
-                    val text = ongoingIntervalItem.getTimeFormatted2(ongoingIntervalItem.end_time)
+                    val text = ongoingIntervalItem.end_time!!.toString(DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss"))
 
-                    Snackbar.make(buttonView, item.toString() + " STOP!", 4000).show()
                     replaceLineInFile("time.txt", linenumber, text)
-
-                    TaskContent.TASKS.removeAll(TaskContent.TASKS)
-                    TaskContent.TASK_MAP.clear()
-                    parseFile("time.txt")
+                    reLoad()
+                    Snackbar.make(buttonView, item.toString() + " STOP!", 4000).show()
                     parentActivity.setupRecyclerView(parentActivity.findViewById(R.id.item_list))
-
                 }
-
-
-
             }
 
             with(holder.itemView) {

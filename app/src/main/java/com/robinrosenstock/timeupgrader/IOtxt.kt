@@ -62,7 +62,7 @@ fun addIntervalItemToFile(filename: String, intervalItem: TaskContent.IntervalIt
                 it.write(line)
                 it.newLine()
                 it.newLine()
-                it.write(intervalItem.getTimeFormatted2(DateTime.now()))
+                it.write(intervalItem.getBeginTimeFormatted())
                 it.newLine()
                 it.write("-->")
                 it.newLine()
@@ -77,6 +77,7 @@ fun addIntervalItemToFile(filename: String, intervalItem: TaskContent.IntervalIt
     }
 
 }
+
 
 
 fun replaceLineInFile(filename: String, linenumber: Int?, text: String?){
@@ -111,6 +112,16 @@ fun replaceLineInFile(filename: String, linenumber: Int?, text: String?){
 }
 
 
+
+fun reLoad(){
+    TaskContent.TASKS.removeAll(TaskContent.TASKS)
+    TaskContent.TASK_MAP.clear()
+    parseFile("time.txt")
+}
+
+
+
+
 fun parseFile(filename: String): Int? {
 
     var end_line_number : Int? = null
@@ -138,6 +149,9 @@ fun parseFile(filename: String): Int? {
 
             while (line.isBlank()) {
                 line = it.readLine()
+                if (line == null){
+                    break@taskLoop
+                }
             }
 
 
@@ -155,15 +169,14 @@ fun parseFile(filename: String): Int? {
 
                 line = it.readLine()
 
-                if (line == null){
-//                    abort
-                }
-
 
                 timeLoop@ while (line != null) {
 
                 while (line.isBlank()) {
                     line = it.readLine()
+                    if (line == null){
+                        break@timeLoop
+                    }
                 }
 
 

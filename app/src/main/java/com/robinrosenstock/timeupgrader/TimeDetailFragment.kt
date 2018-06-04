@@ -42,32 +42,14 @@ class ItemDetailFragment : Fragment() {
 
 
         val builder = StringBuilder()
-//        for (text in item?.interval_list.toString()) {
-//            builder.append(text + "\n")
-//        }
 
-        item?.interval_list?.forEach { intervalItem ->
-            builder.append(intervalItem.getTimeFormatted(intervalItem.begin_time) + "\n")
-            builder.append(intervalItem.getTimeFormatted(intervalItem.end_time) + "\n")
+        item!!.interval_list.forEach {
+            builder.append(it.getBeginTimeFormatted() + "\n")
+            builder.append(it.getEndTimeFormatted() + "\n")
             builder.append("\n")
         }
 
-
         rootView.item_detail.text = builder.toString()
-
-
-        // Show the dummy content as text in a TextView.
-//        item?.let {
-
-
-
-
-//            rootView.item_detail.text = it.interval_list.joinToString()
-
-//            it.interval_list.forEach {
-//                rootView.item_detail.text = it.toString()
-//            }
-//        }
 
         return rootView
     }
