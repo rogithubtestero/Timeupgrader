@@ -153,9 +153,16 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
     }
 
 
+    override fun onDestroy() {
+        super.onDestroy()
 
-override fun onRequestPermissionsResult(requestCode: Int,
-                                        permissions: Array<String>, grantResults: IntArray) {
+        TaskContent.TASKS.removeAll(TaskContent.TASKS)
+        TaskContent.TASK_MAP.clear()
+
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int,
+                                            permissions: Array<String>, grantResults: IntArray) {
     when (requestCode) {
         MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE -> {
             // If request is cancelled, the result arrays are empty.
