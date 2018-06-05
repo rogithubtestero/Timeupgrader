@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".ItemListActivity"
+            android:name=".MainTaskList"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -23,30 +23,22 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ItemDetailActivity"
+            android:name=".TimeDetail"
             android:label="@string/title_item_detail"
-            android:parentActivityName=".ItemListActivity"
+            android:parentActivityName=".MainTaskList"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.robinrosenstock.timeupgrader.ItemListActivity" />
+                android:value="com.robinrosenstock.timeupgrader.MainTaskList" />
         </activity>
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".ItemListActivity">
+            android:parentActivityName=".MainTaskList">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.robinrosenstock.timeupgrader.ItemListActivity" />
+                android:value="com.robinrosenstock.timeupgrader.MainTaskList" />
         </activity>
-        <activity
-            android:name=".Fileactor"
-            android:label="@string/title_activity_file"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".MainActivity"
-            android:label="@string/title_activity_file"
-            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 

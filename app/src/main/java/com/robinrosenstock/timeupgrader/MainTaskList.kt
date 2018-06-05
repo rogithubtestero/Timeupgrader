@@ -23,14 +23,12 @@ import android.view.*
 import android.widget.*
 
 import com.robinrosenstock.timeupgrader.dummy.TaskContent
-import kotlinx.android.synthetic.main.app_bar_main2.*
-import kotlinx.android.synthetic.main.activity_main2.*
+import kotlinx.android.synthetic.main.task_list.*
+import kotlinx.android.synthetic.main.main_layout.*
 import kotlinx.android.synthetic.main.alert_dialog.view.*
-import kotlinx.android.synthetic.main.item_list.*
+import kotlinx.android.synthetic.main.time_list.*
 import android.support.v7.widget.PopupMenu
-import kotlinx.android.synthetic.main.testlayout2.view.*
-import org.jetbrains.anko.contentView
-import org.jetbrains.anko.notificationManager
+import kotlinx.android.synthetic.main.task_fragment.view.*
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import java.io.*
@@ -40,11 +38,11 @@ import java.io.*
  * An activity representing a list of Pings. This activity
  * has different presentations for handset and tablet-size devices. On
  * handsets, the activity presents a list of items, which when touched,
- * lead to a [ItemDetailActivity] representing
+ * lead to a [TimeDetail] representing
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener  {
+class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener  {
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -57,7 +55,7 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main2)
+        setContentView(R.layout.main_layout)
 
         setSupportActionBar(toolbar)
         toolbar.title = title
@@ -204,7 +202,7 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
 
     private fun renameTaskDialog(taskToRename : TaskContent.TaskItem, rootview : View) {
 
-        val dialogBuilder = AlertDialog.Builder(this@ItemListActivity)
+        val dialogBuilder = AlertDialog.Builder(this@MainTaskList)
         dialogBuilder.setTitle("Rename Task")
 //        dialogBuilder.setMessage("I am a alert dialog!")
         val view = layoutInflater.inflate(R.layout.alert_dialog, null)
@@ -237,7 +235,7 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
 
     private fun addNewTaskDialog(rootview : View) {
 
-        val dialogBuilder = AlertDialog.Builder(this@ItemListActivity)
+        val dialogBuilder = AlertDialog.Builder(this@MainTaskList)
         dialogBuilder.setTitle("Add a new task")
 //        dialogBuilder.setMessage("I am a alert dialog!")
         val view = layoutInflater.inflate(R.layout.alert_dialog, null)
@@ -315,8 +313,8 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
             val selectedFile = data?.data //The uri with the location of the file
 
             import_todo_txt(baseContext,selectedFile)
-//            updateRecyclerView(item_list)
-//            updateRecyclerView(findViewById(R.id.item_list))
+//            updateRecyclerView(time_list)
+//            updateRecyclerView(findViewById(R.id.time_list))
 
 
         }
@@ -326,8 +324,8 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         if (requestCode == 111 && resultCode == RESULT_OK) {
             val selectedFile = data?.data //The uri with the location of the file
             import_todo_txt(baseContext,selectedFile)
-//            updateRecyclerView(item_list)
-//            updateRecyclerView(findViewById(R.id.item_list))
+//            updateRecyclerView(time_list)
+//            updateRecyclerView(findViewById(R.id.time_list))
 
         }
     }
@@ -339,7 +337,7 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
 
 
 
-    class SimpleItemRecyclerViewAdapter(private val parentActivity: ItemListActivity,
+    class SimpleItemRecyclerViewAdapter(private val parentActivity: MainTaskList,
                                         private val values: List<TaskContent.TaskItem>,
                                         private val twoPane: Boolean) :
             RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder>() {
@@ -352,9 +350,9 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
             onClickListener = View.OnClickListener { v ->
                 val item = v.tag as TaskContent.TaskItem
                 if (twoPane) {
-                    val fragment = ItemDetailFragment().apply {
+                    val fragment = TimeDetailFragment().apply {
                         arguments = Bundle().apply {
-                            putString(ItemDetailFragment.ARG_ITEM_ID, item.pos.toString())
+                            putString(TimeDetailFragment.ARG_ITEM_ID, item.pos.toString())
                         }
                     }
                     parentActivity.supportFragmentManager
@@ -362,8 +360,8 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
                             .replace(R.id.item_detail_container, fragment)
                             .commit()
                 } else {
-                    val intent = Intent(v.context, ItemDetailActivity::class.java).apply {
-                        putExtra(ItemDetailFragment.ARG_ITEM_ID, item.pos.toString())
+                    val intent = Intent(v.context, TimeDetail::class.java).apply {
+                        putExtra(TimeDetailFragment.ARG_ITEM_ID, item.pos.toString())
                     }
                     v.context.startActivity(intent)
                 }
@@ -412,7 +410,7 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val view = LayoutInflater.from(parent.context)
-                    .inflate(R.layout.testlayout2, parent, false)
+                    .inflate(R.layout.task_fragment, parent, false)
             return ViewHolder(view)
         }
 

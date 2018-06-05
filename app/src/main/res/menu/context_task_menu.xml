@@ -1,7 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.robinrosenstock.timeupgrader.MainActivity">
+    tools:context="com.robinrosenstock.timeupgrader.MainTaskList">
     <item
         android:id="@+id/rename_task"
         android:orderInCategory="100"

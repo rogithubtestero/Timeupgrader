@@ -9,4 +9,4 @@
     android:text="das ist ein test"
     android:textIsSelectable="true"
     android:textSize="18sp"
-    tools:context=".ItemDetailFragment" />
+    tools:context=".TimeDetailFragment" />

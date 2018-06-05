@@ -6,16 +6,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.robinrosenstock.timeupgrader.dummy.TaskContent
-import kotlinx.android.synthetic.main.activity_item_detail.*
-import kotlinx.android.synthetic.main.item_detail.view.*
+import kotlinx.android.synthetic.main.time_detail.*
+import kotlinx.android.synthetic.main.time_detail_fragment.view.*
 
 /**
  * A fragment representing a single Item detail screen.
- * This fragment is either contained in a [ItemListActivity]
- * in two-pane mode (on tablets) or a [ItemDetailActivity]
+ * This fragment is either contained in a [MainTaskList]
+ * in two-pane mode (on tablets) or a [TimeDetail]
  * on handsets.
  */
-class ItemDetailFragment : Fragment() {
+class TimeDetailFragment : Fragment() {
 
     /**
      * The dummy content this fragment is presenting.
@@ -38,7 +38,7 @@ class ItemDetailFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        val rootView = inflater.inflate(R.layout.item_detail, container, false)
+        val rootView = inflater.inflate(R.layout.time_detail_fragment, container, false)
 
 
         val builder = StringBuilder()
