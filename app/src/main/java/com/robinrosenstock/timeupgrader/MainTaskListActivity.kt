@@ -30,6 +30,7 @@ import kotlinx.android.synthetic.main.item_list.*
 import android.support.v7.widget.PopupMenu
 import kotlinx.android.synthetic.main.testlayout2.view.*
 import org.jetbrains.anko.contentView
+import org.jetbrains.anko.notificationManager
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import java.io.*
@@ -62,6 +63,8 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
         toolbar.title = title
 
 
+        val dividerItemDecoration = DividerItemDecoration(item_list.context,1 )
+        item_list.addItemDecoration(dividerItemDecoration)
 
 //        /////////////Default snackbar://////////
 //        fab.setOnClickListener { view ->
@@ -216,14 +219,16 @@ override fun onRequestPermissionsResult(requestCode: Int,
 
 
         view.alert_dialog_button.setOnClickListener{
-            val new_task = view.alert_dialog_text_input.text.toString()
-            val task_entry = TaskContent.TaskItem(new_task, new_task, ArrayList(), 5)
+
+            val lastpos = TaskContent.TASKS.last().pos
+            val task_name = view.alert_dialog_text_input.text.toString()
+            val task_entry = TaskContent.TaskItem(lastpos+1, task_name, ArrayList(), 5)
             TaskContent.TASKS.add(task_entry)
-            TaskContent.TASK_MAP.put(task_entry.id.toString(), task_entry)
+            TaskContent.TASK_MAP.put(task_entry.pos.toString(), task_entry)
 
 //            append the new task to the file:
 //            val time_entry_format = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")
-            File(Environment.getExternalStoragePublicDirectory("/time"), "time.txt").appendText("\n\n" + "# " + new_task)
+            File(Environment.getExternalStoragePublicDirectory("/time"), "time.txt").appendText("\n\n" + "# " + task_name)
 
 //            Snackbar.make(view.rootView, " ADDED!", 4000).show()
 
@@ -236,7 +241,7 @@ override fun onRequestPermissionsResult(requestCode: Int,
 //            Snackbar.make(view, "view", 4000)
 //            Snackbar.make(view.rootView, "view", 4000)
 //            Snackbar.make(it.rootView, new_task + " ADDED!", 4000).show()
-            Snackbar.make(it, new_task + " ADDED!", 4000).show()
+            Snackbar.make(it, task_name + " ADDED!", 4000).show()
 
         }
 
@@ -294,7 +299,7 @@ override fun onRequestPermissionsResult(requestCode: Int,
 
             import_todo_txt(baseContext,selectedFile)
 //            updateRecyclerView(item_list)
-            updateRecyclerView(findViewById(R.id.item_list))
+//            updateRecyclerView(findViewById(R.id.item_list))
 
 
         }
@@ -305,7 +310,7 @@ override fun onRequestPermissionsResult(requestCode: Int,
             val selectedFile = data?.data //The uri with the location of the file
             import_todo_txt(baseContext,selectedFile)
 //            updateRecyclerView(item_list)
-            updateRecyclerView(findViewById(R.id.item_list))
+//            updateRecyclerView(findViewById(R.id.item_list))
 
         }
     }
@@ -313,15 +318,8 @@ override fun onRequestPermissionsResult(requestCode: Int,
 
     private fun setupRecyclerView(recyclerView: RecyclerView) {
         recyclerView.adapter = SimpleItemRecyclerViewAdapter(this, TaskContent.TASKS, twoPane)
-
-        val dividerItemDecoration = DividerItemDecoration(recyclerView.context,1 )
-        recyclerView.addItemDecoration(dividerItemDecoration)
     }
 
-
-    private fun updateRecyclerView(recyclerView: RecyclerView) {
-        recyclerView.adapter.notifyDataSetChanged()
-    }
 
 
     class SimpleItemRecyclerViewAdapter(private val parentActivity: ItemListActivity,
@@ -339,7 +337,7 @@ override fun onRequestPermissionsResult(requestCode: Int,
                 if (twoPane) {
                     val fragment = ItemDetailFragment().apply {
                         arguments = Bundle().apply {
-                            putString(ItemDetailFragment.ARG_ITEM_ID, item.id.toString())
+                            putString(ItemDetailFragment.ARG_ITEM_ID, item.pos.toString())
                         }
                     }
                     parentActivity.supportFragmentManager
@@ -348,7 +346,7 @@ override fun onRequestPermissionsResult(requestCode: Int,
                             .commit()
                 } else {
                     val intent = Intent(v.context, ItemDetailActivity::class.java).apply {
-                        putExtra(ItemDetailFragment.ARG_ITEM_ID, item.id)
+                        putExtra(ItemDetailFragment.ARG_ITEM_ID, item.pos.toString())
                     }
                     v.context.startActivity(intent)
                 }
@@ -369,11 +367,20 @@ override fun onRequestPermissionsResult(requestCode: Int,
                             true
                         }
                         R.id.delete_task -> {
-                            val item2 = it.tag as TaskContent.TaskItem
+                            val task = it.tag as TaskContent.TaskItem
 
-                            val snackbar = Snackbar.make(it, item2.toString() + " DELETED!", 5000)
+
+                            removeWholeTask(task)
+                            reLoad()
+
+
+                            val snackbar = Snackbar.make(it, task.toString() + " DELETED!", 5000)
                             snackbar.setAction("undo", MyUndoListener())
                             snackbar.show()
+                            parentActivity.setupRecyclerView(parentActivity.findViewById(R.id.item_list))
+
+
+
 
 
                             true
@@ -402,59 +409,59 @@ override fun onRequestPermissionsResult(requestCode: Int,
             holder.contentView.text = item.title
 
 
-            item.interval_list.forEach {
-                if (it.end_time == null) {
-                    holder.buttonView.isChecked = true
-                }
-                else{
-                    holder.buttonView.isChecked =false
-                }
-            }
-
-
-            holder.buttonView.setOnCheckedChangeListener { buttonView, isChecked ->
-
-                if(isChecked) {
-
-                    val start_time = DateTime.now()
-
-                    val eins : Int?
-                    val zwei : Int?
-                    val intervalItem: TaskContent.IntervalItem
-
-
-                    if (item.interval_list.size > 0){
-
-                        eins = item.interval_list.last().begin_time_number
-                        zwei = item.interval_list.last().end_time_number
-                        intervalItem = TaskContent.IntervalItem(start_time, null, eins!!.plus(3), eins!!.plus(4))
-                        addIntervalItemToFile("time.txt", intervalItem, item.interval_list.last().end_time_number)
-
-                    }else{
-
-                        eins = item.line_number
-                        intervalItem = TaskContent.IntervalItem(start_time, null, eins!!.plus(2), eins!!.plus(3))
-                        addIntervalItemToFile("time.txt", intervalItem, item.line_number)
-
-                    }
-
-                    reLoad()
-                    Snackbar.make(buttonView, item.toString() + " START!", 4000).show()
-                    parentActivity.setupRecyclerView(parentActivity.findViewById(R.id.item_list))
-
-                }
-                else{
-                    val ongoingIntervalItem = searchOngoingIntervalItem(item)
-                    ongoingIntervalItem!!.end_time = DateTime.now()
-                    val linenumber = ongoingIntervalItem.end_time_number
-                    val text = ongoingIntervalItem.end_time!!.toString(DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss"))
-
-                    replaceLineInFile("time.txt", linenumber, text)
-                    reLoad()
-                    Snackbar.make(buttonView, item.toString() + " STOP!", 4000).show()
-                    parentActivity.setupRecyclerView(parentActivity.findViewById(R.id.item_list))
-                }
-            }
+//            item.interval_list.forEach {
+//                if (it.end_time == null) {
+//                    holder.buttonView.isChecked = true
+//                }
+//                else{
+//                    holder.buttonView.isChecked =false
+//                }
+//            }
+//
+//
+//            holder.buttonView.setOnCheckedChangeListener { buttonView, isChecked ->
+//
+//                if(isChecked) {
+//
+//                    val start_time = DateTime.now()
+//
+//                    val eins : Int?
+//                    val zwei : Int?
+//                    val intervalItem: TaskContent.IntervalItem
+//
+//
+//                    if (item.interval_list.size > 0){
+//
+//                        eins = item.interval_list.last().begin_time_number
+//                        zwei = item.interval_list.last().end_time_number
+//                        intervalItem = TaskContent.IntervalItem(start_time, null, eins!!.plus(3), eins!!.plus(4))
+//                        addIntervalItemToFile("time.txt", intervalItem, item.interval_list.last().end_time_number)
+//
+//                    }else{
+//
+//                        eins = item.line_number
+//                        intervalItem = TaskContent.IntervalItem(start_time, null, eins!!.plus(2), eins!!.plus(3))
+//                        addIntervalItemToFile("time.txt", intervalItem, item.line_number)
+//
+//                    }
+//
+//                    reLoad()
+//                    Snackbar.make(buttonView, item.toString() + " START!", 4000).show()
+//                    parentActivity.setupRecyclerView(parentActivity.findViewById(R.id.item_list))
+//
+//                }
+//                else{
+//                    val ongoingIntervalItem = searchOngoingIntervalItem(item)
+//                    ongoingIntervalItem!!.end_time = DateTime.now()
+//                    val linenumber = ongoingIntervalItem.end_time_number
+//                    val text = ongoingIntervalItem.end_time!!.toString(DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss"))
+//
+//                    replaceLineInFile("time.txt", linenumber, text)
+//                    reLoad()
+//                    Snackbar.make(buttonView, item.toString() + " STOP!", 4000).show()
+//                    parentActivity.setupRecyclerView(parentActivity.findViewById(R.id.item_list))
+//                }
+//            }
 
             with(holder.itemView) {
                 tag = item
@@ -469,7 +476,7 @@ override fun onRequestPermissionsResult(requestCode: Int,
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 //            val idView: TextView = view.id_text
             val contentView: TextView = view.content
-            val buttonView: ToggleButton = view.push_button
+//            val buttonView: ToggleButton = view.push_button
         }
     }
 

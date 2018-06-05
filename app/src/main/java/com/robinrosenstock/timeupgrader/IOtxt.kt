@@ -19,9 +19,9 @@ fun import_todo_txt(context: Context, filename: Uri?) {
         while (line != null) {
             if (line.isNotBlank()) {
                 var task_number_list: MutableList<Int?> = ArrayList()
-                val neger = TaskContent.TaskItem("222", line, ArrayList(), 1)
+                val neger = TaskContent.TaskItem(222, line, ArrayList(), 1)
                 TaskContent.TASKS.add(neger)
-                TaskContent.TASK_MAP.put(neger.id.toString(), neger)
+                TaskContent.TASK_MAP.put(neger.pos.toString(), neger)
             }
             line = it.readLine()
         }
@@ -80,6 +80,42 @@ fun addIntervalItemToFile(filename: String, intervalItem: TaskContent.IntervalIt
 
 
 
+fun removeWholeTask(task : TaskContent.TaskItem){
+
+    val timefile = File(Environment.getExternalStoragePublicDirectory("/time"), "time.txt")
+    val tmpFilename = File(Environment.getExternalStoragePublicDirectory("/time"), "tmp.txt")
+    val tmpFile = timefile.copyTo(tmpFilename,true, DEFAULT_BUFFER_SIZE)
+
+    val reader = LineNumberReader(tmpFile.bufferedReader())
+    val writer = timefile.bufferedWriter()
+
+    var line = reader.readLine()
+        writer.use {
+
+        while (line != null) {
+
+            if (reader.lineNumber == task.line_number){
+
+                    while (reader.lineNumber < TaskContent.TASKS[task.pos + 1].line_number) {
+                        line = reader.readLine()
+                        if (line == null){
+                            break
+                        }
+                    }
+                }
+
+            else {
+                it.write(line)
+                it.newLine()
+                line = reader.readLine()
+            }
+        }
+
+    }
+
+}
+
+
 fun replaceLineInFile(filename: String, linenumber: Int?, text: String?){
 
     val timefile = File(Environment.getExternalStoragePublicDirectory("/time"), "time.txt")
@@ -131,7 +167,7 @@ fun parseFile(filename: String): Int? {
 
         var line = it.readLine()
         var task_name: String
-        var task_id : String = "0"
+        var task_pos : Int = -1
         var begin_time: DateTime? = null
         var end_time: DateTime? = null
         var task_line_number : Int
@@ -163,7 +199,7 @@ fun parseFile(filename: String): Int? {
                     line = it.readLine()
                     continue@taskLoop
                 }
-                task_id = task_id.toInt().plus(1).toString()
+                task_pos = task_pos.plus(1)
                 interval_list = ArrayList()
 
 
@@ -274,14 +310,14 @@ fun parseFile(filename: String): Int? {
 //                            we have a new task!
 //                            now save the old task and then
 //                            go out of the time loop to the taskLoop@ again!
-                            addParsedTask(task_id, task_name, interval_list, task_line_number)
+                            addParsedTask(task_pos, task_name, interval_list, task_line_number)
                             continue@taskLoop
                         }
 
                             else -> {
 
                                 print("abort")
-                                addParsedTask(task_id, task_name, interval_list, task_line_number)
+                                addParsedTask(task_pos, task_name, interval_list, task_line_number)
                                 line = it.readLine()
                                 continue@taskLoop
                             }
@@ -291,7 +327,7 @@ fun parseFile(filename: String): Int? {
                     }//timeLoop@
 
 //                We have a valid task name, but no times or invalid times
-                addParsedTask(task_id, task_name, interval_list, task_line_number)
+                addParsedTask(task_pos, task_name, interval_list, task_line_number)
 
 
             } // if task_name_regex.matches
@@ -312,21 +348,21 @@ fun parseFile(filename: String): Int? {
 
 
 
-fun addParsedTask(task_id: String,
+fun addParsedTask(task_pos: Int,
                   task_name : String,
                   interval_list: MutableList<TaskContent.IntervalItem>,
                   task_line_number : Int) {
 
-    val parsedTask = TaskContent.TaskItem(task_id, task_name, interval_list, task_line_number)
+    val parsedTask = TaskContent.TaskItem(task_pos, task_name, interval_list, task_line_number)
     TaskContent.TASKS.add(parsedTask)
-    TaskContent.TASK_MAP.put(parsedTask.id, parsedTask)
+    TaskContent.TASK_MAP.put(parsedTask.pos.toString(), parsedTask)
 }
 
 
 
 fun isTaskAlreadyDefined(task_entry : String?) : Boolean {
     TaskContent.TASKS.forEach {
-        if (task_entry!!.equals(it.id)){
+        if (task_entry!!.equals(it.pos)){
             return true
         }
     }

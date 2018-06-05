@@ -52,13 +52,13 @@ object TaskContent {
 
     private fun addItem(item: TaskItem) {
         TASKS.add(item)
-        TASK_MAP.put(item.id.toString(), item)
+        TASK_MAP.put(item.pos.toString(), item)
     }
 
 
     private fun deleteItem(item: TaskItem) {
         TASKS.remove(item)
-        TASK_MAP.remove(item.id.toString())
+        TASK_MAP.remove(item.pos.toString())
     }
 
 
@@ -107,7 +107,7 @@ object TaskContent {
     /**
      * A TaskItem is a item representing a task, which contains an id (maybe this is unnecassary?), an title (which is for now named content) and a list of Instants .
      */
-    data class TaskItem(val id: String,
+    data class TaskItem(val pos: Int,
                         val title: String,
                         val interval_list: MutableList<IntervalItem>,
                         val line_number : Int) {
