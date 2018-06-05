@@ -79,13 +79,7 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
 //            startActivity(intent)
 
 //          ////////  add a task through a custom dialog, learned from here: <https://www.youtube.com/watch?v=Z9LhAgBSlhU> /////
-            addNewTaskDialog()
-
-
-
-//            Snackbar.make(it.rootView, " ADDED!", 4000).show()
-
-//            updateRecyclerView(findViewById(R.id.item_list))
+            addNewTaskDialog(it)
         }
 
 
@@ -203,7 +197,7 @@ override fun onRequestPermissionsResult(requestCode: Int,
 
 
 
-    private fun renameTaskDialog(taskToRename : TaskContent.TaskItem) {
+    private fun renameTaskDialog(taskToRename : TaskContent.TaskItem, rootview : View) {
 
         val dialogBuilder = AlertDialog.Builder(this@ItemListActivity)
         dialogBuilder.setTitle("Rename Task")
@@ -222,31 +216,21 @@ override fun onRequestPermissionsResult(requestCode: Int,
 
             val new_task_name = view.alert_dialog_text_input.text.toString()
 
-//            taskToRename.title = new_task_name
-
             renameTask(taskToRename, new_task_name)
-
-
             reLoad()
-
 
             alertDialog.dismiss()
 
-//            todo: this snackbar is not working?
-//            Snackbar.make(view, "view", 4000)
-//            Snackbar.make(view.rootView, "view", 4000)
-//            Snackbar.make(it.rootView, new_task + " ADDED!", 4000).show()
-            Snackbar.make(it, " Renamed!", 4000).show()
+
+            Snackbar.make(rootview, "${taskToRename.title} RENAMED to: $new_task_name", 5000).show()
 
             setupRecyclerView(findViewById(R.id.item_list))
-
-
         }
     }
 
 
 
-    private fun addNewTaskDialog() {
+    private fun addNewTaskDialog(rootview : View) {
 
         val dialogBuilder = AlertDialog.Builder(this@ItemListActivity)
         dialogBuilder.setTitle("Add a new task")
@@ -266,21 +250,14 @@ override fun onRequestPermissionsResult(requestCode: Int,
             TaskContent.TASKS.add(task_entry)
             TaskContent.TASK_MAP.put(task_entry.pos.toString(), task_entry)
 
-//            append the new task to the file:
+//            append the new task to the end of the file:
 //            val time_entry_format = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")
-            File(Environment.getExternalStoragePublicDirectory("/time"), "time.txt").appendText("\n\n" + "# " + task_name)
-
-//            Snackbar.make(view.rootView, " ADDED!", 4000).show()
-
-            alertDialog.dismiss()
+            File(Environment.getExternalStoragePublicDirectory("/time"), "time.txt").appendText("\n\n# $task_name")
 
             reLoad()
+            alertDialog.dismiss()
 
-//            todo: this snackbar is not working?
-//            Snackbar.make(view, "view", 4000)
-//            Snackbar.make(view.rootView, "view", 4000)
-//            Snackbar.make(it.rootView, new_task + " ADDED!", 4000).show()
-            Snackbar.make(it, task_name + " ADDED!", 4000).show()
+            Snackbar.make(rootview, "$task_name ADDED!", 4000).show()
 
             setupRecyclerView(findViewById(R.id.item_list))
         }
@@ -397,7 +374,7 @@ override fun onRequestPermissionsResult(requestCode: Int,
 
                             val task = it.tag as TaskContent.TaskItem
 
-                            parentActivity.renameTaskDialog(task)
+                            parentActivity.renameTaskDialog(task, it)
 
 
                             true
