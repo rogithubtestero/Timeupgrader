@@ -148,8 +148,6 @@ class ItemListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
             setupRecyclerView(findViewById(R.id.item_list))
         }
 
-
-
     }
 
 
