@@ -148,6 +148,38 @@ fun replaceLineInFile(filename: String, linenumber: Int?, text: String?){
 }
 
 
+fun renameTask(task : TaskContent.TaskItem, newTaskName: String){
+
+
+        val timefile = File(Environment.getExternalStoragePublicDirectory("/time"), "time.txt")
+    val tmpFilename = File(Environment.getExternalStoragePublicDirectory("/time"), "tmp.txt")
+    val tmpFile = timefile.copyTo(tmpFilename,true, DEFAULT_BUFFER_SIZE)
+
+    val reader = LineNumberReader(tmpFile.bufferedReader())
+    val writer = timefile.bufferedWriter()
+
+    var line = reader.readLine()
+    writer.use {
+
+        while (line != null) {
+
+            if (reader.lineNumber == task.line_number){
+                it.write("# $newTaskName")
+                it.newLine()
+                line = reader.readLine()
+            }
+
+            else {
+                it.write(line)
+                it.newLine()
+                line = reader.readLine()
+            }
+        }
+
+    }
+
+}
+
 
 fun reLoad(){
     TaskContent.TASKS.removeAll(TaskContent.TASKS)
