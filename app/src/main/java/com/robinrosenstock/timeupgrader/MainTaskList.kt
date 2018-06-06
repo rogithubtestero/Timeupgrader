@@ -26,7 +26,7 @@ import com.robinrosenstock.timeupgrader.dummy.TaskContent
 import kotlinx.android.synthetic.main.task_list.*
 import kotlinx.android.synthetic.main.main_layout.*
 import kotlinx.android.synthetic.main.alert_dialog.view.*
-import kotlinx.android.synthetic.main.time_list.*
+import kotlinx.android.synthetic.main.task_list_recyclerview.*
 import android.support.v7.widget.PopupMenu
 import kotlinx.android.synthetic.main.task_fragment.view.*
 import org.joda.time.DateTime
@@ -56,13 +56,12 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_layout)
-
         setSupportActionBar(toolbar)
         toolbar.title = title
 
 
-        val dividerItemDecoration = DividerItemDecoration(item_list.context,1 )
-        item_list.addItemDecoration(dividerItemDecoration)
+        val dividerItemDecoration = DividerItemDecoration(task_list.context,1 )
+        task_list.addItemDecoration(dividerItemDecoration)
 
 //        /////////////Default snackbar://////////
 //        fab.setOnClickListener { view ->
@@ -143,7 +142,7 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 file.createNewFile()
             }
 
-            setupRecyclerView(findViewById(R.id.item_list))
+            setupRecyclerView(findViewById(R.id.task_list))
         }
 
     }
@@ -179,7 +178,7 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     file.createNewFile()
                 }
 
-                setupRecyclerView(findViewById(R.id.item_list))
+                setupRecyclerView(findViewById(R.id.task_list))
 
 
             } else {
@@ -227,7 +226,7 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             Snackbar.make(rootview, "${taskToRename.title} RENAMED to: $new_task_name", 5000).show()
 
-            setupRecyclerView(findViewById(R.id.item_list))
+            setupRecyclerView(findViewById(R.id.task_list))
         }
     }
 
@@ -262,7 +261,7 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             Snackbar.make(rootview, "$task_name ADDED!", 4000).show()
 
-            setupRecyclerView(findViewById(R.id.item_list))
+            setupRecyclerView(findViewById(R.id.task_list))
         }
     }
 
@@ -295,7 +294,7 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.action_settings -> startActivity(intent1)
             R.id.reload -> {
                 reLoad()
-                setupRecyclerView(findViewById(R.id.item_list))
+                setupRecyclerView(findViewById(R.id.task_list))
             }
 
             else -> super.onOptionsItemSelected(item)
@@ -313,8 +312,8 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val selectedFile = data?.data //The uri with the location of the file
 
             import_todo_txt(baseContext,selectedFile)
-//            updateRecyclerView(time_list)
-//            updateRecyclerView(findViewById(R.id.time_list))
+//            updateRecyclerView(task_list_recyclerview)
+//            updateRecyclerView(findViewById(R.id.task_list_recyclerview))
 
 
         }
@@ -324,8 +323,8 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (requestCode == 111 && resultCode == RESULT_OK) {
             val selectedFile = data?.data //The uri with the location of the file
             import_todo_txt(baseContext,selectedFile)
-//            updateRecyclerView(time_list)
-//            updateRecyclerView(findViewById(R.id.time_list))
+//            updateRecyclerView(task_list_recyclerview)
+//            updateRecyclerView(findViewById(R.id.task_list_recyclerview))
 
         }
     }
@@ -391,7 +390,7 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                             val snackbar = Snackbar.make(it, task.toString() + " DELETED!", 5000)
                             snackbar.setAction("undo", MyUndoListener())
                             snackbar.show()
-                            parentActivity.setupRecyclerView(parentActivity.findViewById(R.id.item_list))
+                            parentActivity.setupRecyclerView(parentActivity.findViewById(R.id.task_list))
 
                             true
                         }
@@ -457,7 +456,7 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                     reLoad()
                     Snackbar.make(buttonView, item.toString() + " START!", 4000).show()
-                    parentActivity.setupRecyclerView(parentActivity.findViewById(R.id.item_list))
+                    parentActivity.setupRecyclerView(parentActivity.findViewById(R.id.task_list))
 
                 }
                 else{
@@ -469,7 +468,7 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     replaceLineInFile("time.txt", linenumber, text)
                     reLoad()
                     Snackbar.make(buttonView, item.toString() + " STOP!", 4000).show()
-                    parentActivity.setupRecyclerView(parentActivity.findViewById(R.id.item_list))
+                    parentActivity.setupRecyclerView(parentActivity.findViewById(R.id.task_list))
                 }
             }
 

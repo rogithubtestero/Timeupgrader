@@ -21,6 +21,9 @@ object TaskContent {
      */
     val TASKS: MutableList<TaskItem> = ArrayList()
 
+    val INTERVALS: MutableList<IntervalItem> = ArrayList()
+
+
 
     /**
      * A map of sample (dummy) items, by ID.

@@ -15,17 +15,17 @@
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/toolbar_layout_time"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/toolbar_layout"
             android:fitsSystemWindows="true"
             app:contentScrim="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            app:toolbarId="@+id/toolbar">
+            app:toolbarId="@+id/toolbar_time">
 
             <android.support.v7.widget.Toolbar
+                android:id="@+id/detail_toolbar_time"
                 android:layout_width="match_parent"
-                android:id="@+id/detail_toolbar"
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
@@ -35,19 +35,19 @@
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.widget.NestedScrollView
-        android:id="@+id/item_detail_container"
+        android:id="@+id/item_detail_container_time"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab2"
+        android:id="@+id/fab_time2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|start"
         android:layout_margin="@dimen/fab_margin"
-        android:label="@id/fab2"
-        app:layout_anchor="@+id/item_detail_container"
+        android:label="@id/fab_time"
+        app:layout_anchor="@+id/item_detail_container_time"
         app:layout_anchorGravity="top|end"
         app:srcCompat="@android:drawable/stat_notify_chat" />
 

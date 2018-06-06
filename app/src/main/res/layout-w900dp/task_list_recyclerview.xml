@@ -23,7 +23,7 @@
         android:name="com.robinrosenstock.timeupgrader.ItemListFragment"
         android:layout_width="@dimen/item_width"
         android:layout_height="match_parent"
-        android:id="@+id/item_list"
+        android:id="@+id/task_list"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         app:layoutManager="LinearLayoutManager"

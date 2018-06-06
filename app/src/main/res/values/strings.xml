@@ -8,7 +8,8 @@
     <string name="delete">delete</string>
     <string name="start">start</string>
     <string name="on">On</string>
-    <string name="title_item_detail">Item Detail</string>
+    <string name="title_item_detail">Task Detail</string>
+    <string name="title_item_detail_time">Time Detail</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Android Studio</string>
