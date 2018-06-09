@@ -3,8 +3,6 @@ package com.robinrosenstock.timeupgrader
 import android.content.Context
 import android.net.Uri
 import android.os.Environment
-import android.util.Log
-import com.robinrosenstock.timeupgrader.dummy.TaskContent
 import org.joda.time.*
 import org.joda.time.format.DateTimeFormat
 import java.io.*
@@ -200,6 +198,7 @@ fun parseFile(filename: String): Int? {
         var line = it.readLine()
         var task_name: String
         var task_pos : Int = -1
+        var time_pos : Int = -1
         var begin_time: DateTime? = null
         var end_time: DateTime? = null
         var task_line_number : Int
@@ -254,6 +253,7 @@ fun parseFile(filename: String): Int? {
 //                            we have begin_time!
                             begin_time = time_entry_format.parseDateTime(line)
                             begin_time_number = it.lineNumber
+                            time_pos = time_pos.plus(1)
 
                             line = it.readLine()
 
@@ -263,7 +263,7 @@ fun parseFile(filename: String): Int? {
 //                                    we have begin_time & end_time!
                                     end_time = time_entry_format.parseDateTime(line)
                                     end_time_number = it.lineNumber
-                                    interval_list.add(TaskContent.IntervalItem(begin_time, end_time, begin_time_number, end_time_number))
+                                    interval_list.add(TaskContent.IntervalItem(time_pos, begin_time, end_time, begin_time_number, end_time_number))
 
 //                                    there might be additional times continue time Loop:
                                     line = it.readLine()
@@ -275,7 +275,7 @@ fun parseFile(filename: String): Int? {
 //                                  we have begin_time and end time is null
                                     end_time = null
                                     end_time_number = it.lineNumber
-                                    interval_list.add(TaskContent.IntervalItem(begin_time, end_time, begin_time_number, end_time_number))
+                                    interval_list.add(TaskContent.IntervalItem(time_pos, begin_time, end_time, begin_time_number, end_time_number))
 
                                     //                                    there might be additional times continue time Loop:
                                     line = it.readLine()
@@ -297,6 +297,7 @@ fun parseFile(filename: String): Int? {
 
                             begin_time = null
                             begin_time_number = it.lineNumber
+                            time_pos = time_pos.plus(1)
 
                             line = it.readLine()
 
@@ -306,7 +307,7 @@ fun parseFile(filename: String): Int? {
 //                                    we have begin_time & end_time!
                                     end_time = time_entry_format.parseDateTime(line)
                                     end_time_number = it.lineNumber
-                                    interval_list.add(TaskContent.IntervalItem(begin_time, end_time, begin_time_number, end_time_number))
+                                    interval_list.add(TaskContent.IntervalItem(time_pos, begin_time, end_time, begin_time_number, end_time_number))
 
 //                                    there might be additional times continue time Loop:
                                     line = it.readLine()
@@ -318,7 +319,7 @@ fun parseFile(filename: String): Int? {
 //                                  we have begin_time and end time is null
                                     end_time = null
                                     end_time_number = it.lineNumber
-                                    interval_list.add(TaskContent.IntervalItem(begin_time, end_time, begin_time_number, end_time_number))
+                                    interval_list.add(TaskContent.IntervalItem(time_pos, begin_time, end_time, begin_time_number, end_time_number))
 
                                     //                                    there might be additional times continue time Loop:
                                     line = it.readLine()

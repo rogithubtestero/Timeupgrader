@@ -22,7 +22,6 @@ import android.support.v7.widget.DividerItemDecoration
 import android.view.*
 import android.widget.*
 
-import com.robinrosenstock.timeupgrader.dummy.TaskContent
 import kotlinx.android.synthetic.main.task_list.*
 import kotlinx.android.synthetic.main.main_layout.*
 import kotlinx.android.synthetic.main.alert_dialog.view.*
@@ -443,13 +442,13 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                         eins = item.interval_list.last().begin_time_number
                         zwei = item.interval_list.last().end_time_number
-                        intervalItem = TaskContent.IntervalItem(start_time, null, eins!!.plus(3), eins!!.plus(4))
+                        intervalItem = TaskContent.IntervalItem(item.pos, start_time, null, eins!!.plus(3), eins!!.plus(4))
                         addIntervalItemToFile("time.txt", intervalItem, item.interval_list.last().end_time_number)
 
                     }else{
 
                         eins = item.line_number
-                        intervalItem = TaskContent.IntervalItem(start_time, null, eins!!.plus(2), eins!!.plus(3))
+                        intervalItem = TaskContent.IntervalItem(item.pos, start_time, null, eins!!.plus(2), eins!!.plus(3))
                         addIntervalItemToFile("time.txt", intervalItem, item.line_number)
 
                     }

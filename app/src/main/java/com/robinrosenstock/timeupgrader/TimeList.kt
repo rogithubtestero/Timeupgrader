@@ -1,10 +1,14 @@
 package com.robinrosenstock.timeupgrader
 
 import android.content.Intent
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Rect
 import android.os.Bundle
 import android.os.Environment
-import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.PopupMenu
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -13,14 +17,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
-import android.widget.ToggleButton
-import com.robinrosenstock.timeupgrader.dummy.TaskContent
 import kotlinx.android.synthetic.main.time_detail.*
 import kotlinx.android.synthetic.main.time_fragment.view.*
 import kotlinx.android.synthetic.main.time_list.*
-import org.joda.time.DateTime
-import org.joda.time.format.DateTimeFormat
+import kotlinx.android.synthetic.main.time_list_recyclerview.*
+import net.steamcrafted.lineartimepicker.adapter.DateAdapter
+import net.steamcrafted.lineartimepicker.adapter.LinearPickerAdapter
+import net.steamcrafted.lineartimepicker.adapter.TimeAdapter
+import net.steamcrafted.lineartimepicker.dialog.LinearTimePickerDialog
+import net.steamcrafted.lineartimepicker.view.LinearPickerView
+import net.steamcrafted.lineartimepicker.view.LinearTimePickerView
 import java.io.File
+import java.text.AttributedCharacterIterator
+import java.util.jar.Attributes
+import kotlin.coroutines.experimental.coroutineContext
 
 /**
  * An activity representing a single Item detail screen. This
@@ -42,7 +52,8 @@ class TimeDetail : AppCompatActivity() {
         setSupportActionBar(toolbar_time)
         toolbar_time.title = title
 
-
+        val dividerItemDecoration = DividerItemDecoration(time_list.context,1 )
+        time_list.addItemDecoration(dividerItemDecoration)
 
 //        get the clicked task
         clicked_task_id = intent.extras.getString(TimeDetailFragment.ARG_ITEM_ID).toInt()
@@ -97,18 +108,67 @@ class TimeDetail : AppCompatActivity() {
     }
 
 
+    class myLinearPickerAdapter : LinearPickerAdapter{
+        override fun onDraw(canvas: Canvas?, elementBounds: Array<out Rect>?, gravity: LinearPickerAdapter.Gravity?) {
+            // This method is called once by the LinearPickerView every time it draws itself
+            // You can use this to draw a custom background as all the other elements will be drawn on top
+            // The array elementBounds contains the exact space and location that every element on the linear dial may use
+        }
+
+        override fun onDrawHandle(index: Int, intermediate: Int, canvas: Canvas?, bounds: Rect?, gravity: LinearPickerAdapter.Gravity?, occluded: LinearPickerAdapter.ScreenHalf?) {
+            // This method is called last. Draw the handle here.
+            // index corresponds to the currently selected visible pip index.
+            // intermediate corresponds to the invisible pip step (0 -> visible pip selected, > 0 -> invisible pip selected)
+            // bounds The bounds inside which you should draw the handle (once again just a hint)
+            // occluded Which half of the screen the user's finger is currently touching
+            // gravity Currently unused, part of a future API
+        }
+
+        override fun getLargePipCount(): Int {
+            // Should provide the number of large pips to display (constant value)
+            return 30
+        }
+
+        override fun getSmallPipCount(): Int {
+            // Should provide the number of small pips between 2 large pips to display (constant value)
+            return 10
+        }
+
+        override fun onDrawElement(index: Int, canvas: Canvas?, bounds: Rect?, yOffset: Float, gravity: LinearPickerAdapter.Gravity?) {
+            // This method is called by the LinearPickerView every time a dial element has to be drawn
+            // index denotes the visible pip index of the dial element (see pip section)
+            // bounds gives a hint to where you should draw the dial element and also the size of the element
+            // yOffset An yOffset of 1f corresponds to a dial element that is located the distance between
+            //     2 big pips from the handle. In the picker examples this is used to fade out the small pips
+            // gravity Currently unused, part of a future API
+        }
+
+
+
+        override fun getInvisiblePipCount(visiblePipIndex: Int): Int {
+            // Should provide the number of "invisible pips" or substeps between any 2 visible pips (can vary between pips)
+            // For more info on the visiblePipIndex, see the pip section below
+
+        return 1
+        }
+
+    }
+
+
+
 
     private fun setupRecyclerView(recyclerView: RecyclerView) {
 
         val muh = TaskContent.TASKS[clicked_task_id].interval_list
+
 
         recyclerView.adapter = SimpleItemRecyclerViewAdapter2(this, muh, twoPane)
 
     }
 
     class SimpleItemRecyclerViewAdapter2(private val parentActivity: TimeDetail,
-                                        private val values: List<TaskContent.IntervalItem>,
-                                        private val twoPane: Boolean) :
+                                         private val values: List<TaskContent.IntervalItem>,
+                                         private val twoPane: Boolean) :
             RecyclerView.Adapter<SimpleItemRecyclerViewAdapter2.ViewHolder>() {
 
         private val onClickListener: View.OnClickListener
@@ -117,23 +177,34 @@ class TimeDetail : AppCompatActivity() {
 
         init {
             onClickListener = View.OnClickListener { v ->
-                val item = v.tag as TaskContent.TaskItem
-                if (twoPane) {
-                    val fragment = TimeDetailFragment().apply {
-                        arguments = Bundle().apply {
-                            putString(TimeDetailFragment.ARG_ITEM_ID, item.pos.toString())
-                        }
-                    }
-                    parentActivity.supportFragmentManager
-                            .beginTransaction()
-                            .replace(R.id.item_detail_container, fragment)
-                            .commit()
-                } else {
-                    val intent = Intent(v.context, TimeDetail::class.java).apply {
-                        putExtra(TimeDetailFragment.ARG_ITEM_ID, item.pos.toString())
-                    }
-                    v.context.startActivity(intent)
-                }
+
+
+//                val interval = v.tag as TaskContent.IntervalItem
+//
+//                val pp = myLinearPickerAdapter()
+//                val muh =  LinearPickerView(v.context)
+//
+//                muh.setAdapter(pp)
+//
+//                addNewTaskDialog()
+
+
+                val dialog = LinearTimePickerDialog.Builder.with(v.context)
+                        .setPickerBackgroundColor(Color.WHITE)
+                        .setLineColor(Color.BLACK)
+                        .setTextColor(Color.BLACK)
+                        .setShowTutorial(false)
+                        .setButtonColor(Color.BLACK)
+                        .setTextBackgroundColor(Color.LTGRAY)
+                        .build()
+
+                dialog.show()
+
+
+
+
+
+
             }
 
 
@@ -144,7 +215,7 @@ class TimeDetail : AppCompatActivity() {
                     when (item.itemId){
                         R.id.rename_task -> {
 
-                            val task = it.tag as TaskContent.TaskItem
+//                            val task = it.tag as TaskContent.TaskItem
 
 //                            parentActivity.renameTaskDialog(task, it)
 
@@ -152,15 +223,15 @@ class TimeDetail : AppCompatActivity() {
                             true
                         }
                         R.id.delete_task -> {
-                            val task = it.tag as TaskContent.TaskItem
 
-                            removeWholeTask(task)
-                            reLoad()
-
-                            val snackbar = Snackbar.make(it, task.toString() + " DELETED!", 5000)
-                            snackbar.setAction("undo", TimeDetail.MyUndoListener())
-                            snackbar.show()
-                            parentActivity.setupRecyclerView(parentActivity.findViewById(R.id.task_list))
+//                            val task = it.tag as TaskContent.TaskItem
+//
+////                            reLoad()
+//
+//                            val snackbar = Snackbar.make(it, task.toString() + " DELETED!", 5000)
+//                            snackbar.setAction("undo", TimeDetail.MyUndoListener())
+//                            snackbar.show()
+//                            parentActivity.setupRecyclerView(parentActivity.findViewById(R.id.task_list))
 
                             true
                         }
@@ -182,62 +253,17 @@ class TimeDetail : AppCompatActivity() {
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val item = values[position]
-            holder.contentView.text = item.begin_time_number.toString()
 
+            holder.contentView.text = item.getBeginTimeFormatted()
+            holder.contentView2.text = item.getEndTimeFormatted()
 
-//            item.interval_list.forEach {
-//                if (it.end_time == null) {
-//                    holder.buttonView.isChecked = true
-//                }
-//                else{
-//                    holder.buttonView.isChecked =false
-//                }
-//            }
+            holder.time_duration.text = item.getFormattedDuration()
 
+            holder.time_duration.setOnClickListener {
+                Toast.makeText(it.rootView.context,"not yet implemented", Toast.LENGTH_LONG).show()
 
-//            holder.buttonView.setOnCheckedChangeListener { buttonView, isChecked ->
-//
-//                if(isChecked) {
-//
-//                    val start_time = DateTime.now()
-//
-//                    val eins : Int?
-//                    val zwei : Int?
-//                    val intervalItem: TaskContent.IntervalItem
-//
-//
-//                    if (item.interval_list.size > 0){
-//
-//                        eins = item.interval_list.last().begin_time_number
-//                        zwei = item.interval_list.last().end_time_number
-//                        intervalItem = TaskContent.IntervalItem(start_time, null, eins!!.plus(3), eins!!.plus(4))
-//                        addIntervalItemToFile("time.txt", intervalItem, item.interval_list.last().end_time_number)
-//
-//                    }else{
-//
-//                        eins = item.line_number
-//                        intervalItem = TaskContent.IntervalItem(start_time, null, eins!!.plus(2), eins!!.plus(3))
-//                        addIntervalItemToFile("time.txt", intervalItem, item.line_number)
-//
-//                    }
-//
-//                    reLoad()
-//                    Snackbar.make(buttonView, item.toString() + " START!", 4000).show()
-//                    parentActivity.setupRecyclerView(parentActivity.findViewById(R.id.task_list))
-//
-//                }
-//                else{
-//                    val ongoingIntervalItem = searchOngoingIntervalItem(item)
-//                    ongoingIntervalItem!!.end_time = DateTime.now()
-//                    val linenumber = ongoingIntervalItem.end_time_number
-//                    val text = ongoingIntervalItem.end_time!!.toString(DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss"))
-//
-//                    replaceLineInFile("time.txt", linenumber, text)
-//                    reLoad()
-//                    Snackbar.make(buttonView, item.toString() + " STOP!", 4000).show()
-//                    parentActivity.setupRecyclerView(parentActivity.findViewById(R.id.task_list))
-//                }
-//            }
+            }
+
 
             with(holder.itemView) {
                 tag = item
@@ -245,6 +271,8 @@ class TimeDetail : AppCompatActivity() {
                 setOnLongClickListener(onLongClickListener)
 
             }
+
+
         }
 
 
@@ -254,7 +282,9 @@ class TimeDetail : AppCompatActivity() {
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             //            val idView: TextView = view.id_text
             val contentView: TextView = view.content_time
-            val buttonView: ToggleButton = view.push_button_time
+            val contentView2: TextView = view.content_time2
+//            val buttonView: ToggleButton = view.push_button_time
+            val time_duration: TextView = view.textview_duration
         }
     }
 
@@ -268,77 +298,6 @@ class TimeDetail : AppCompatActivity() {
             // Code to undo the user's last action
         }
     }
-
-
-
-
-
-//    private fun renameTaskDialog(taskToRename : TaskContent.TaskItem, rootview : View) {
-//
-//        val dialogBuilder = AlertDialog.Builder(this@TimeDetail)
-//        dialogBuilder.setTitle("Rename Task")
-////        dialogBuilder.setMessage("I am a alert dialog!")
-//        val view = layoutInflater.inflate(R.layout.alert_dialog, null)
-//        dialogBuilder.setView(view)
-//
-//        view.alert_dialog_text.text = "What is the new name?"
-//        view.alert_dialog_button.text = "Rename!"
-//
-//        val alertDialog = dialogBuilder.create()
-//
-//        alertDialog.show()
-//
-//        view.alert_dialog_button.setOnClickListener{
-//
-//            val new_task_name = view.alert_dialog_text_input.text.toString()
-//
-//            renameTask(taskToRename, new_task_name)
-//            reLoad()
-//
-//            alertDialog.dismiss()
-//
-//
-//            Snackbar.make(rootview, "${taskToRename.title} RENAMED to: $new_task_name", 5000).show()
-//
-//            setupRecyclerView(findViewById(R.id.item_list))
-//        }
-//    }
-
-
-
-//    private fun addNewTaskDialog(rootview : View) {
-//
-//        val dialogBuilder = AlertDialog.Builder(this@TimeDetail)
-//        dialogBuilder.setTitle("Add a new task")
-////        dialogBuilder.setMessage("I am a alert dialog!")
-//        val view = layoutInflater.inflate(R.layout.alert_dialog, null)
-//        dialogBuilder.setView(view)
-//
-//        val alertDialog = dialogBuilder.create()
-//
-//        alertDialog.show()
-//
-//        view.alert_dialog_button.setOnClickListener{
-//
-//            val lastpos = TaskContent.TASKS.last().pos
-//            val task_name = view.alert_dialog_text_input.text.toString()
-//            val task_entry = TaskContent.TaskItem(lastpos+1, task_name, ArrayList(), 5)
-//            TaskContent.TASKS.add(task_entry)
-//            TaskContent.TASK_MAP.put(task_entry.pos.toString(), task_entry)
-//
-////            append the new task to the end of the file:
-////            val time_entry_format = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")
-//            File(Environment.getExternalStoragePublicDirectory("/time"), "time.txt").appendText("\n\n# $task_name")
-//
-//            reLoad()
-//            alertDialog.dismiss()
-//
-//            Snackbar.make(rootview, "$task_name ADDED!", 4000).show()
-//
-//            setupRecyclerView(findViewById(R.id.item_list))
-//        }
-//    }
-
 
 
 

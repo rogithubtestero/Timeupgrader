@@ -6,7 +6,7 @@
     android:name="com.robinrosenstock.timeupgrader.ItemListFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginLeft="5dp"
+    android:layout_marginLeft="0dp"
     android:layout_marginRight="0dp"
     app:layoutManager="android.support.v7.widget.GridLayoutManager"
     tools:context=".MainTaskList"
