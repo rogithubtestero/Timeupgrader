@@ -1,12 +1,13 @@
 package com.robinrosenstock.timeupgrader
 
 import android.Manifest
+import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Environment
 import android.support.design.widget.NavigationView
-import android.support.design.widget.Snackbar
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
@@ -24,12 +25,10 @@ import android.widget.*
 
 import kotlinx.android.synthetic.main.task_list.*
 import kotlinx.android.synthetic.main.main_layout.*
-import kotlinx.android.synthetic.main.alert_dialog.view.*
 import kotlinx.android.synthetic.main.task_list_recyclerview.*
 import android.support.v7.widget.PopupMenu
 import kotlinx.android.synthetic.main.task_fragment.view.*
 import org.joda.time.DateTime
-import org.joda.time.format.DateTimeFormat
 import java.io.*
 
 
@@ -50,6 +49,7 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var twoPane: Boolean = false
 
     var MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE : Int = 0
+    var endlinenumber = -1
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,8 +74,7 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //            val intent = Intent(this, MainActivity::class.java)
 //            startActivity(intent)
 
-//          ////////  add a task through a custom dialog, learned from here: <https://www.youtube.com/watch?v=Z9LhAgBSlhU> /////
-            addNewTaskDialog(it)
+            addNewTaskDialog()
         }
 
 
@@ -116,14 +115,14 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //                // sees the explanation, try again to request the permission.
 //            } else {
 
-                // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(this,
-                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                        MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE)
+            // No explanation needed, we can request the permission.
+            ActivityCompat.requestPermissions(this,
+                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                    MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE)
 
-                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
+            // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+            // app-defined int constant. The callback method gets the
+            // result of the request.
 //            }
         } else {
             // Permission has already been granted
@@ -133,7 +132,7 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
             if (file.canWrite()) {
-                parseFile("time.txt")
+                endlinenumber = parseFile("time.txt")
 
             }
             else{
@@ -142,6 +141,7 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
 
             setupRecyclerView(findViewById(R.id.task_list))
+
         }
 
     }
@@ -151,118 +151,49 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         super.onDestroy()
 
         TaskContent.TASKS.removeAll(TaskContent.TASKS)
-        TaskContent.TASK_MAP.clear()
 
     }
 
     override fun onRequestPermissionsResult(requestCode: Int,
                                             permissions: Array<String>, grantResults: IntArray) {
-    when (requestCode) {
-        MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE -> {
-            // If request is cancelled, the result arrays are empty.
-            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+        when (requestCode) {
+            MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE -> {
+                // If request is cancelled, the result arrays are empty.
+                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
 
-                // permission was granted, yay!
+                    // permission was granted, yay!
 
-                val filedirectory = Environment.getExternalStoragePublicDirectory("/time")
-                val file = File(filedirectory, "time.txt")
+                    val filedirectory = Environment.getExternalStoragePublicDirectory("/time")
+                    val file = File(filedirectory, "time.txt")
 
 
-                if (file.canWrite()) {
-                    parseFile("time.txt")
+                    if (file.canWrite()) {
+                        endlinenumber = parseFile("time.txt")
 
+                    }
+                    else{
+                        filedirectory.mkdirs()
+                        file.createNewFile()
+                    }
+
+                    setupRecyclerView(findViewById(R.id.task_list))
+
+
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
                 }
-                else{
-                    filedirectory.mkdirs()
-                    file.createNewFile()
-                }
-
-                setupRecyclerView(findViewById(R.id.task_list))
-
-
-            } else {
-                // permission denied, boo! Disable the
-                // functionality that depends on this permission.
+                return
             }
-            return
-        }
 
-    // Add other 'when' lines to check for other
-    // permissions this app might request.
-        else -> {
-            // Ignore all other requests.
-        }
-    }
-}
-
-
-
-
-    private fun renameTaskDialog(taskToRename : TaskContent.TaskItem, rootview : View) {
-
-        val dialogBuilder = AlertDialog.Builder(this@MainTaskList)
-        dialogBuilder.setTitle("Rename Task")
-//        dialogBuilder.setMessage("I am a alert dialog!")
-        val view = layoutInflater.inflate(R.layout.alert_dialog, null)
-        dialogBuilder.setView(view)
-
-        view.alert_dialog_text.text = "What is the new name?"
-        view.alert_dialog_button.text = "Rename!"
-
-        val alertDialog = dialogBuilder.create()
-
-        alertDialog.show()
-
-        view.alert_dialog_button.setOnClickListener{
-
-            val new_task_name = view.alert_dialog_text_input.text.toString()
-
-            renameTask(taskToRename, new_task_name)
-            reLoad()
-
-            alertDialog.dismiss()
-
-
-            Snackbar.make(rootview, "${taskToRename.title} RENAMED to: $new_task_name", 5000).show()
-
-            setupRecyclerView(findViewById(R.id.task_list))
+        // Add other 'when' lines to check for other
+        // permissions this app might request.
+            else -> {
+                // Ignore all other requests.
+            }
         }
     }
 
-
-
-    private fun addNewTaskDialog(rootview : View) {
-
-        val dialogBuilder = AlertDialog.Builder(this@MainTaskList)
-        dialogBuilder.setTitle("Add a new task")
-//        dialogBuilder.setMessage("I am a alert dialog!")
-        val view = layoutInflater.inflate(R.layout.alert_dialog, null)
-        dialogBuilder.setView(view)
-
-        val alertDialog = dialogBuilder.create()
-
-        alertDialog.show()
-
-        view.alert_dialog_button.setOnClickListener{
-
-            val lastpos = TaskContent.TASKS.last().pos
-            val task_name = view.alert_dialog_text_input.text.toString()
-            val task_entry = TaskContent.TaskItem(lastpos+1, task_name, ArrayList(), 5)
-            TaskContent.TASKS.add(task_entry)
-            TaskContent.TASK_MAP.put(task_entry.pos.toString(), task_entry)
-
-//            append the new task to the end of the file:
-//            val time_entry_format = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")
-            File(Environment.getExternalStoragePublicDirectory("/time"), "time.txt").appendText("\n\n# $task_name")
-
-            reLoad()
-            alertDialog.dismiss()
-
-            Snackbar.make(rootview, "$task_name ADDED!", 4000).show()
-
-            setupRecyclerView(findViewById(R.id.task_list))
-        }
-    }
 
 
     override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
@@ -289,11 +220,17 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         when (item.itemId) {
             R.id.open_file -> startActivityForResult(Intent.createChooser(intent2, "Select a file"), 222)
-            R.id.import_file -> startActivityForResult(Intent.createChooser(intent2, "Select a file"), 111)
+//            R.id.import_file -> startActivityForResult(Intent.createChooser(intent2, "Select a file"), 111)
+            R.id.import_file -> {
+                writeFile(TaskContent.TASKS)
+            }
             R.id.action_settings -> startActivity(intent1)
             R.id.reload -> {
                 reLoad()
-                setupRecyclerView(findViewById(R.id.task_list))
+//                for now: this is working:
+                notifyRecyclerView(findViewById(R.id.task_list))
+//                if something is broken then setup from new with:
+//                setupRecyclerView(findViewById(R.id.task_list))
             }
 
             else -> super.onOptionsItemSelected(item)
@@ -334,6 +271,10 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
 
+    private fun notifyRecyclerView(recyclerView: RecyclerView) {
+        recyclerView.adapter.notifyDataSetChanged()
+    }
+
 
     class SimpleItemRecyclerViewAdapter(private val parentActivity: MainTaskList,
                                         private val values: List<TaskContent.TaskItem>,
@@ -350,7 +291,7 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 if (twoPane) {
                     val fragment = TimeDetailFragment().apply {
                         arguments = Bundle().apply {
-                            putString(TimeDetailFragment.ARG_ITEM_ID, item.pos.toString())
+                            putString(TimeDetailFragment.ITEM_POS, item.pos.toString())
                         }
                     }
                     parentActivity.supportFragmentManager
@@ -359,7 +300,7 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                             .commit()
                 } else {
                     val intent = Intent(v.context, TimeDetail::class.java).apply {
-                        putExtra(TimeDetailFragment.ARG_ITEM_ID, item.pos.toString())
+                        putExtra(TimeDetailFragment.ITEM_POS, item.pos.toString())
                     }
                     v.context.startActivity(intent)
                 }
@@ -374,22 +315,26 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         R.id.rename_task -> {
 
                             val task = it.tag as TaskContent.TaskItem
+                            val index = TaskContent.TASKS.indexOf(task)
 
-                            parentActivity.renameTaskDialog(task, it)
-
-
+                            parentActivity.renameTask(task, it.context)
                             true
+
                         }
                         R.id.delete_task -> {
                             val task = it.tag as TaskContent.TaskItem
 
-                            removeWholeTask(task)
-                            reLoad()
+//                            removeTask(task)
 
-                            val snackbar = Snackbar.make(it, task.toString() + " DELETED!", 5000)
-                            snackbar.setAction("undo", MyUndoListener())
-                            snackbar.show()
-                            parentActivity.setupRecyclerView(parentActivity.findViewById(R.id.task_list))
+                            val index = TaskContent.TASKS.indexOf(task)
+                            TaskContent.TASKS.removeAt(index)
+                            parentActivity.notifyRecyclerView(parentActivity.findViewById(R.id.task_list))
+
+//                            reLoad()
+//                            val snackbar = Snackbar.make(it, task.toString() + " DELETED!", 5000)
+//                            snackbar.setAction("undo", MyUndoListener())
+//                            snackbar.show()
+//                            parentActivity.setupRecyclerView(parentActivity.findViewById(R.id.task_list))
 
                             true
                         }
@@ -405,84 +350,102 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
 
-
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val view = LayoutInflater.from(parent.context)
                     .inflate(R.layout.task_fragment, parent, false)
+
             return ViewHolder(view)
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val item = values[position]
-            holder.contentView.text = item.title
+
+            val task = values[position]
+            holder.contentView.text = task.title
 
 
-            item.interval_list.forEach {
-                if (it.end_time == null) {
-                    holder.buttonView.isChecked = true
-                }
-                else{
-                    holder.buttonView.isChecked =false
-                }
+            if(task.ongoing){
+                holder.buttonView.isChecked = true
+            }else{
+                holder.buttonView.isChecked = false
             }
 
+//            item.interval_list.forEach {
+//                if (it.end_time == null) {
+//                    holder.buttonView.isChecked = true
+//                }
+////                else{
+////                    holder.buttonView.isChecked =false
+////                }
+//            }
 
-            holder.buttonView.setOnCheckedChangeListener { buttonView, isChecked ->
-
-                if(isChecked) {
-
-                    val start_time = DateTime.now()
-
-                    val eins : Int?
-                    val zwei : Int?
-                    val intervalItem: TaskContent.IntervalItem
-
-
-                    if (item.interval_list.size > 0){
-
-                        eins = item.interval_list.last().begin_time_number
-                        zwei = item.interval_list.last().end_time_number
-                        intervalItem = TaskContent.IntervalItem(item.pos, start_time, null, eins!!.plus(3), eins!!.plus(4))
-                        addIntervalItemToFile("time.txt", intervalItem, item.interval_list.last().end_time_number)
-
-                    }else{
-
-                        eins = item.line_number
-                        intervalItem = TaskContent.IntervalItem(item.pos, start_time, null, eins!!.plus(2), eins!!.plus(3))
-                        addIntervalItemToFile("time.txt", intervalItem, item.line_number)
-
-                    }
-
-                    reLoad()
-                    Snackbar.make(buttonView, item.toString() + " START!", 4000).show()
-                    parentActivity.setupRecyclerView(parentActivity.findViewById(R.id.task_list))
-
-                }
-                else{
-                    val ongoingIntervalItem = searchOngoingIntervalItem(item)
-                    ongoingIntervalItem!!.end_time = DateTime.now()
-                    val linenumber = ongoingIntervalItem.end_time_number
-                    val text = ongoingIntervalItem.end_time!!.toString(DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss"))
-
-                    replaceLineInFile("time.txt", linenumber, text)
-                    reLoad()
-                    Snackbar.make(buttonView, item.toString() + " STOP!", 4000).show()
-                    parentActivity.setupRecyclerView(parentActivity.findViewById(R.id.task_list))
-                }
-            }
+//            holder.buttonView.setOnClickListener {
+//
+//
+//                if(holder.buttonView.isChecked) {
+//
+//                    val intervall_item =  TaskContent.IntervalItem(123, DateTime.now(), null, 123, 321)
+//                        task.interval_list.add(intervall_item)
+//
+//                    val start_time = DateTime.now()
+//
+//                    val eins : Int?
+//                    val zwei : Int?
+//                    val intervalItem: TaskContent.IntervalItem
+//
+//
+//                    if (task.interval_list.size > 0){
+//
+//                        eins = task.interval_list.last().begin_time_number
+//                        zwei = task.interval_list.last().end_time_number
+//                        intervalItem = TaskContent.IntervalItem(task.pos, start_time, null, eins!!.plus(3), eins!!.plus(4))
+////                        addIntervalItemToFile("time.txt", intervalItem, item.interval_list.last().end_time_number)
+//
+//                    }else{
+//
+//                        eins = task.line_number
+//                        intervalItem = TaskContent.IntervalItem(task.pos, start_time, null, eins!!.plus(2), eins!!.plus(3))
+////                        addIntervalItemToFile("time.txt", intervalItem, item.line_number)
+//
+//                    }
+//
+//                    reLoad()
+////                    Snackbar.make(buttonView, item.toString() + " START!", 4000).show()
+////                    parentActivity.setupRecyclerView(parentActivity.findViewById(R.id.task_list))
+//
+//
+////                    TaskContent.TASKS[task.pos].title = new_name
+//                    parentActivity.task_list.adapter.notifyItemChanged(task.pos)
+//
+//                }
+//                else{
+//
+//
+////                    val ongoingIntervalItem = searchOngoingIntervalItem(item)
+////                    ongoingIntervalItem!!.end_time = DateTime.now()
+////                    val linenumber = ongoingIntervalItem.end_time_number
+////                    val text = ongoingIntervalItem.end_time!!.toString(DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss"))
+////
+////                    replaceLineInFile("time.txt", linenumber, text)
+////                    reLoad()
+////                    Snackbar.make(buttonView, item.toString() + " STOP!", 4000).show()
+////                    parentActivity.setupRecyclerView(parentActivity.findViewById(R.id.task_list))
+//                }
+//            }
 
             with(holder.itemView) {
-                tag = item
+                tag = task
                 setOnClickListener(onClickListener)
                 setOnLongClickListener(onLongClickListener)
 
             }
+
         }
+
 
         override fun getItemCount() = values.size
 
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-//            val idView: TextView = view.id_text
+            //            val idView: TextView = view.id_text
             val contentView: TextView = view.content
             val buttonView: ToggleButton = view.push_button
         }
@@ -525,6 +488,85 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
     }
+
+
+
+
+    private fun addNewTaskDialog() {
+
+        val dialogBuilder = AlertDialog.Builder(this@MainTaskList)
+
+        var name : String = ""
+        val edittext = EditText(this@MainTaskList)
+
+        dialogBuilder.setView(edittext)
+        dialogBuilder.setTitle("Add a new task")
+        dialogBuilder.setNegativeButton("Cancel", { dialogInterface: DialogInterface, i: Int ->
+        })
+        dialogBuilder.setPositiveButton("Add!", { dialogInterface: DialogInterface, i: Int ->
+            //                                new_name = dialogView.alert_dialog_text_input.text.toString()
+
+            name = edittext.text.toString()
+            val lasttask = TaskContent.TASKS.last()
+
+            val last_time_pos = lasttask.interval_list.last().end_time_number
+
+
+            val new_task = TaskContent.TaskItem(lasttask.pos+1, name, ArrayList(), last_time_pos!!)
+            TaskContent.TASKS.add(lasttask.pos+1,new_task)
+            task_list.adapter.notifyItemInserted(lasttask.pos+1)
+
+
+            addTaskToFile(last_time_pos, new_task.title)
+
+
+//            //// for that working first all whitespace at the end must be removed (at the parsing process or somewhen inbetween)
+//            File(Environment.getExternalStoragePublicDirectory("/time"), "time.txt").appendText("\n# $name")
+
+        })
+        val alertDialog = dialogBuilder.create()
+        alertDialog.show()
+    }
+
+
+
+    private fun renameTask(task : TaskContent.TaskItem, context: Context) {
+
+        val dialogBuilder = AlertDialog.Builder(context)
+        var new_name : String = ""
+        val edittext = EditText(context)
+
+        dialogBuilder.setView(edittext)
+        edittext.setText(task.title)
+        dialogBuilder.setTitle("Rename Task")
+        dialogBuilder.setNegativeButton("Cancel", { dialogInterface: DialogInterface, i: Int ->
+
+        })
+        dialogBuilder.setPositiveButton("Rename!", { dialogInterface: DialogInterface, i: Int ->
+            //                                new_name = dialogView.alert_dialog_text_input.text.toString()
+
+            new_name = edittext.text.toString()
+
+            TaskContent.TASKS[task.pos].title = new_name
+            task_list.adapter.notifyItemChanged(task.pos)
+
+
+//                            rename task on the file
+//            renameTaskonFile(task, new_name)
+//                            reLoad()
+
+        })
+
+        val alertDialog = dialogBuilder.create()
+        alertDialog.show()
+
+    }
+
+
+
+
+
+
 
 
 }

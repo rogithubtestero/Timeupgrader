@@ -25,11 +25,11 @@ class TimeDetailFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         arguments?.let {
-            if (it.containsKey(ARG_ITEM_ID)) {
+            if (it.containsKey(ITEM_POS)) {
                 // Load the dummy content specified by the fragment
                 // arguments. In a real-world scenario, use a Loader
                 // to load content from a content provider.
-                item = TaskContent.TASK_MAP[it.getString(ARG_ITEM_ID)]
+                item = TaskContent.TASKS[it.getInt(ITEM_POS)]
                 activity?.toolbar_layout_time?.title = item?.title
             }
         }
@@ -58,6 +58,6 @@ class TimeDetailFragment : Fragment() {
          * The fragment argument representing the item ID that this fragment
          * represents.
          */
-        const val ARG_ITEM_ID = "item_id"
+        const val ITEM_POS = "item_id"
     }
 }
