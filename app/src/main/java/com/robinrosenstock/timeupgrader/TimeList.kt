@@ -40,7 +40,7 @@ class TimeDetail : AppCompatActivity() {
 
 
         fab_time.setOnClickListener {
-            addTimeDialog(this)
+            addTimeDialog(this, clicked_task_id)
         }
 
         time_list.adapter = RecyclerViewAdapterForTime(this, clicked_task.interval_list, twoPane, clicked_task)
