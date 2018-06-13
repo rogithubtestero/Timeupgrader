@@ -5,7 +5,6 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import kotlinx.android.synthetic.main.time_detail.*
 import kotlinx.android.synthetic.main.time_detail_fragment.view.*
 
 /**
@@ -30,9 +29,10 @@ class TimeDetailFragment : Fragment() {
                 // arguments. In a real-world scenario, use a Loader
                 // to load content from a content provider.
                 item = TaskContent.TASKS[it.getInt(ITEM_POS)]
-                activity?.toolbar_layout_time?.title = item?.title
+//                activity?.toolbar_layout_time?.title = item?.title
             }
         }
+
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,

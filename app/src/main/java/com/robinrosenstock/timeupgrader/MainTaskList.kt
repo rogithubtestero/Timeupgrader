@@ -186,6 +186,19 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
 
+    override fun onPause() {
+        super.onPause()
+
+
+    }
+
+
+    override fun onStop() {
+        super.onStop()
+
+        writeFile(TaskContent.TASKS)
+
+    }
 
     override fun onDestroy() {
         super.onDestroy()
@@ -193,6 +206,9 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         TaskContent.TASKS.removeAll(TaskContent.TASKS)
 
     }
+
+
+
 
 }
 

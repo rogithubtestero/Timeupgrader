@@ -17,10 +17,10 @@ fun addTaskDialog(context : Context) {
 
     dialogBuilder.setView(edittext)
     dialogBuilder.setTitle("Add a new task")
-    dialogBuilder.setNegativeButton("Cancel", { dialogInterface: DialogInterface, i: Int ->
+    dialogBuilder.setNegativeButton("Cancel", { _: DialogInterface, _: Int ->
         //            do nothing
     })
-    dialogBuilder.setPositiveButton("Add!", { dialogInterface: DialogInterface, i: Int ->
+    dialogBuilder.setPositiveButton("Add!", { _: DialogInterface, _: Int ->
         name = edittext.text.toString()
         val new_index = TaskContent.TASKS.lastIndex+1
         val new_task = TaskContent.TaskItem(1234, name, ArrayList(),456, false)
@@ -45,10 +45,10 @@ fun renameTaskDialog(task : TaskContent.TaskItem, context: Context) {
     dialogBuilder.setView(edittext)
     edittext.setText(task.title)
     dialogBuilder.setTitle("Rename Task")
-    dialogBuilder.setNegativeButton("Cancel", { dialogInterface: DialogInterface, i: Int ->
+    dialogBuilder.setNegativeButton("Cancel", { _: DialogInterface, _: Int ->
         //do nothing
     })
-    dialogBuilder.setPositiveButton("Rename!", { dialogInterface: DialogInterface, i: Int ->
+    dialogBuilder.setPositiveButton("Rename!", { _: DialogInterface, _: Int ->
         new_name = edittext.text.toString()
         TaskContent.TASKS[task.pos].title = new_name
         (context as Activity).task_list.adapter.notifyItemChanged(index)

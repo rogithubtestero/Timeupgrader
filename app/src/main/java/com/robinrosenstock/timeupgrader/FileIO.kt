@@ -63,14 +63,14 @@ fun parseFile(filename: String): Int {
         var task_name: String
         var task_pos : Int = -1
         var time_pos : Int = -1
-        var begin_time: DateTime? = null
-        var ongoing: Boolean = false
-        var end_time: DateTime? = null
+        var begin_time: DateTime?
+        var ongoing = false
+        var end_time: DateTime?
         var task_line_number : Int
         var begin_time_number : Int
         var end_time_number : Int
         var interval_list: MutableList<TaskContent.IntervalItem>
-        var parsedTask : TaskContent.TaskItem
+//        var parsedTask : TaskContent.TaskItem
         val time_entry_format = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")
         val task_name_regex = Regex("^(#+ +)(?<name>.*)")
         val time_entry_regex = Regex("^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\$")
@@ -227,7 +227,7 @@ fun parseFile(filename: String): Int {
 //                We have a valid task name, but no times or invalid times
                 val parsedTask = TaskContent.TaskItem(task_pos, task_name, interval_list, task_line_number, ongoing)
                 TaskContent.TASKS.add(parsedTask)
-                ongoing = false
+//                ongoing = false
 
 
             } // if task_name_regex.matches

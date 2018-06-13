@@ -70,8 +70,7 @@ object TaskContent {
 
         override fun toString(): String
         {
-//            return title ?: "undefined"
-            return title ?: "undefined"
+            return title
         }
     }
 
