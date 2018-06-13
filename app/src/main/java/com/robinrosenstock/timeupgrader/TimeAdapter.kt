@@ -9,13 +9,10 @@ import android.widget.TextView
 import android.widget.Toast
 import com.kunzisoft.switchdatetime.SwitchDateTimeDialogFragment
 import kotlinx.android.synthetic.main.time_fragment.view.*
-import java.text.SimpleDateFormat
 import java.util.*
-import com.codetroopers.betterpickers.radialtimepicker.RadialTimePickerDialogFragment
-import android.R.attr.button
-import com.codetroopers.betterpickers.timepicker.TimePickerBuilder
+import android.support.design.widget.Snackbar
+import kotlinx.android.synthetic.main.task_list_recyclerview.*
 import kotlinx.android.synthetic.main.time_list_recyclerview.*
-import net.danlew.android.joda.JodaTimeAndroid
 import org.joda.time.DateTime
 
 
@@ -40,14 +37,6 @@ class RecyclerViewAdapterForTime(private val parentActivity: TimeDetail,
             dateTimeDialogFragment1.startAtTimeView()
             dateTimeDialogFragment1.set24HoursMode(true)
             dateTimeDialogFragment1.setDefaultDateTime(clicked_interval.begin_time?.toDate())
-
-
-//// Define new day and month format
-//            try {
-//                dateTimeDialogFragment.setSimpleDateMonthAndDayFormat(SimpleDateFormat("dd MMMM", Locale.getDefault()));
-//            } catch (e : SwitchDateTimeDialogFragment.SimpleDateMonthAndDayFormatException ) {
-////    Log.e(TAG, e.getMessage());
-//            }
 
 
             dateTimeDialogFragment1.setOnButtonClickListener(object : SwitchDateTimeDialogFragment.OnButtonWithNeutralClickListener{
@@ -150,19 +139,28 @@ class RecyclerViewAdapterForTime(private val parentActivity: TimeDetail,
             val popup = PopupMenu(this.parentActivity, it)
             popup.setOnMenuItemClickListener { item ->
                 when (item.itemId){
-                    R.id.rename_task -> {
 
-                        true
-                    }
-                    R.id.delete_task -> {
+                    R.id.delete_time -> {
 
+                        val clicked_interval = it.tag as TaskContent.IntervalItem
+                        val clicked_index = task.interval_list.indexOf(clicked_interval)
+
+                        val task_index = TaskContent.TASKS.indexOf(task)
+
+                        TaskContent.TASKS[task_index].interval_list.removeAt(clicked_index)
+                        parentActivity.time_list.adapter.notifyItemRemoved(clicked_index)
+//                        parentActivity.task_list.adapter.notifyItemChanged(task_index)
+
+                        val snackbar = Snackbar.make(it, task.toString() + " DELETED!", 5000)
+                        snackbar.setAction("undo", UndoTimeDelete(parentActivity.time_list, task, clicked_interval,  clicked_index))
+                        snackbar.show()
 
                         true
                     }
                     else -> false
                 }
             }
-            popup.inflate(R.menu.context_task_menu)
+            popup.inflate(R.menu.context_time_menu)
             popup.show()
             true
         }

@@ -66,7 +66,7 @@ class RecyclerViewAdapterForTasks(private val parentActivity: MainTaskList,
                         parentActivity.task_list.adapter.notifyItemRemoved(index)
 
                         val snackbar = Snackbar.make(it, task.toString() + " DELETED!", 5000)
-                            snackbar.setAction("undo", MyUndoListener(parentActivity.task_list, task, index))
+                            snackbar.setAction("undo", UndoTaskDelete(parentActivity.task_list, task, index))
                             snackbar.show()
 
                         true
