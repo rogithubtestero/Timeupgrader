@@ -3,23 +3,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.robinrosenstock.timeupgrader.MainTaskList">
     <item
-        android:id="@+id/open_file"
+        android:id="@+id/read_file"
         android:orderInCategory="100"
-        android:title="@string/open_file"
+        android:title="@string/read_file"
         app:showAsAction="never" />
     <item
-        android:id="@+id/import_file"
+        android:id="@+id/write_file"
         android:orderInCategory="100"
-        android:title="@string/import_file"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
+        android:title="@string/write_file"
         app:showAsAction="never" />
     <item
         android:id="@+id/reload"
         android:orderInCategory="100"
         android:title="@string/reload"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="100"
+        android:title="@string/action_settings"
         app:showAsAction="never" />
 </menu>

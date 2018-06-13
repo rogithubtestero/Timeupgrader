@@ -403,18 +403,6 @@ class TimeDetail : AppCompatActivity() {
     }
 
 
-    class MyUndoListener : View.OnClickListener {
-
-        override
-        fun onClick(v: View) {
-
-            Toast.makeText(v.context,"not yet implemented", Toast.LENGTH_LONG).show()
-            // Code to undo the user's last action
-        }
-    }
-
-
-
     override fun onOptionsItemSelected(item: MenuItem) =
             when (item.itemId) {
                 android.R.id.home -> {

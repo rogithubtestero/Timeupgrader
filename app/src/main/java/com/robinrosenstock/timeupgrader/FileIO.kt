@@ -1,79 +1,9 @@
 package com.robinrosenstock.timeupgrader
 
-import android.content.Context
-import android.net.Uri
 import android.os.Environment
 import org.joda.time.*
 import org.joda.time.format.DateTimeFormat
 import java.io.*
-
-
-
-fun import_todo_txt(context: Context, filename: Uri?) {
-
-    val input = context.getContentResolver().openInputStream(filename)
-    input.bufferedReader().use {
-        var line = it.readLine()
-        while (line != null) {
-            if (line.isNotBlank()) {
-                var task_number_list: MutableList<Int?> = ArrayList()
-                val neger = TaskContent.TaskItem(222, line, ArrayList(), 1)
-                TaskContent.TASKS.add(neger)
-            }
-            line = it.readLine()
-        }
-    }
-}
-
-
-
-fun searchOngoingIntervalItem(task: TaskContent.TaskItem): TaskContent.IntervalItem?{
-
-    task.interval_list.forEach {
-
-        if (it.end_time == null) {
-            return it
-        }
-    }
-    return null
-}
-
-
-
-fun addIntervalItemToFile(filename: String, intervalItem: TaskContent.IntervalItem, on_line: Int?) {
-
-    val timefile = File(Environment.getExternalStoragePublicDirectory("/time"), "time.txt")
-    val tmpFilename = File(Environment.getExternalStoragePublicDirectory("/time"), "tmp.txt")
-    val tmpFile = timefile.copyTo(tmpFilename, true, DEFAULT_BUFFER_SIZE)
-
-    val reader = LineNumberReader(tmpFile.bufferedReader())
-    val writer = timefile.bufferedWriter()
-
-    var line = reader.readLine()
-
-    writer.use {
-
-        while (line != null) {
-
-            if (reader.lineNumber == on_line) {
-                it.write(line)
-                it.newLine()
-                it.newLine()
-                it.write(intervalItem.getBeginTimeFormatted())
-                it.newLine()
-                it.write("-->")
-                it.newLine()
-                line = reader.readLine()
-            } else {
-                it.write(line)
-                it.newLine()
-                line = reader.readLine()
-            }
-        }
-
-    }
-
-}
 
 
 fun writeFile(TASKS : MutableList<TaskContent.TaskItem>) {
@@ -106,146 +36,20 @@ fun writeFile(TASKS : MutableList<TaskContent.TaskItem>) {
 }
 
 
-//fun removeTask(task : TaskContent.TaskItem){
-//
-//    val timefile = File(Environment.getExternalStoragePublicDirectory("/time"), "time.txt")
-//    val tmpFilename = File(Environment.getExternalStoragePublicDirectory("/time"), "tmp.txt")
-//    val tmpFile = timefile.copyTo(tmpFilename,true, DEFAULT_BUFFER_SIZE)
-//
-//    val reader = LineNumberReader(tmpFile.bufferedReader())
-//    val writer = timefile.bufferedWriter()
-//
-//    var line = reader.readLine()
-//        writer.use {
-//
-//        while (line != null) {
-//
-//            if (reader.lineNumber == task.line_number){
-//
-//                    while (reader.lineNumber < TaskContent.TASKS[task.pos+1].line_number) {
-//                        line = reader.readLine()
-//                        if (line == null){
-//                            break
-//                        }
-//                    }
-//                }
-//
-//            else {
-//                it.write(line)
-//                it.newLine()
-//                line = reader.readLine()
-//            }
-//        }
-//
-//    }
-//
-//}
+fun readFile(filename: String){
 
+    val filedirectory = Environment.getExternalStoragePublicDirectory("/time")
+    val file = File(filedirectory, filename)
 
-fun replaceLineInFile(filename: String, linenumber: Int?, text: String?){
-
-    val timefile = File(Environment.getExternalStoragePublicDirectory("/time"), "time.txt")
-    val tmpFilename = File(Environment.getExternalStoragePublicDirectory("/time"), "tmp.txt")
-    val tmpFile = timefile.copyTo(tmpFilename,true, DEFAULT_BUFFER_SIZE)
-
-    val reader = LineNumberReader(tmpFile.bufferedReader())
-    val writer = timefile.bufferedWriter()
-
-    var line = reader.readLine()
-
-    writer.use {
-
-        while (line != null) {
-
-            if (reader.lineNumber == linenumber){
-                it.write(text)
-                it.newLine()
-                line = reader.readLine()
-            }
-            else {
-                it.write(line)
-                it.newLine()
-                line = reader.readLine()
-            }
-        }
-
+    if (file.canRead()) {
+        parseFile("time.txt")
+    }
+    else{
+        filedirectory.mkdirs()
+        file.createNewFile()
     }
 
 }
-
-
-fun addTaskToFile(last_time_pos : Int, name: String){
-
-
-    val timefile = File(Environment.getExternalStoragePublicDirectory("/time"), "time.txt")
-    val tmpFilename = File(Environment.getExternalStoragePublicDirectory("/time"), "tmp.txt")
-    val tmpFile = timefile.copyTo(tmpFilename,true, DEFAULT_BUFFER_SIZE)
-
-    val reader = LineNumberReader(tmpFile.bufferedReader())
-    val writer = timefile.bufferedWriter()
-
-    var line = reader.readLine()
-    writer.use {
-
-        while (line != null) {
-
-            if (reader.lineNumber == last_time_pos){
-                it.write(line)
-                it.newLine()
-                it.newLine()
-                it.write("# $name")
-                line = reader.readLine()
-            }
-
-            else {
-                it.write(line)
-                it.newLine()
-                line = reader.readLine()
-            }
-        }
-    }
-}
-
-
-
-
-//fun renameTaskonFile(task : TaskContent.TaskItem, newTaskName: String){
-//
-//
-//    val timefile = File(Environment.getExternalStoragePublicDirectory("/time"), "time.txt")
-//    val tmpFilename = File(Environment.getExternalStoragePublicDirectory("/time"), "tmp.txt")
-//    val tmpFile = timefile.copyTo(tmpFilename,true, DEFAULT_BUFFER_SIZE)
-//
-//    val reader = LineNumberReader(tmpFile.bufferedReader())
-//    val writer = timefile.bufferedWriter()
-//
-//    var line = reader.readLine()
-//    writer.use {
-//
-//        while (line != null) {
-//
-//            if (reader.lineNumber == task.line_number){
-//                it.write("# $newTaskName")
-//                it.newLine()
-//                line = reader.readLine()
-//            }
-//
-//            else {
-//                it.write(line)
-//                it.newLine()
-//                line = reader.readLine()
-//            }
-//        }
-//    }
-//}
-
-
-fun reLoad(){
-    TaskContent.TASKS.removeAll(TaskContent.TASKS)
-    parseFile("time.txt")
-}
-
-
 
 
 fun parseFile(filename: String): Int {
@@ -271,7 +75,6 @@ fun parseFile(filename: String): Int {
         val task_name_regex = Regex("^(#+ +)(?<name>.*)")
         val time_entry_regex = Regex("^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\$")
 
-
         taskLoop@ while (line != null) {
 
 
@@ -281,7 +84,6 @@ fun parseFile(filename: String): Int {
                     break@taskLoop
                 }
             }
-
 
             if (task_name_regex.matches(line)) {
 
@@ -294,9 +96,7 @@ fun parseFile(filename: String): Int {
                 task_pos = task_pos.plus(1)
                 interval_list = ArrayList()
 
-
                 line = it.readLine()
-
 
                 timeLoop@ while (line != null) {
 
@@ -306,7 +106,6 @@ fun parseFile(filename: String): Int {
                             break@timeLoop
                         }
                     }
-
 
                     when {
                         time_entry_regex.matches(line) -> {
@@ -400,7 +199,6 @@ fun parseFile(filename: String): Int {
 
                         }//empty begin_time
 
-
                         task_name_regex.matches(line) -> {
 //                            we have a new task!
 //                            now save the old task and then
@@ -424,7 +222,6 @@ fun parseFile(filename: String): Int {
                         }
                     }
 
-
                 }//timeLoop@
 
 //                We have a valid task name, but no times or invalid times
@@ -443,10 +240,7 @@ fun parseFile(filename: String): Int {
             ongoing = false
             end_line_number = it.lineNumber
         }//taskLoop@
-
-    }
-
-
+    }//reader
     return end_line_number
 }
 
