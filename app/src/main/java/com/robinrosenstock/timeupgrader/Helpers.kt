@@ -1,7 +1,5 @@
 package com.robinrosenstock.timeupgrader
 
-import android.app.Activity
-import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.Toast
@@ -17,3 +15,4 @@ class MyUndoListener(var task_list : RecyclerView, var task : TaskContent.TaskIt
         // Code to undo the user's last action
     }
 }
+

@@ -72,7 +72,7 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             readFile("time.txt")
         }
 
-        task_list.adapter = SimpleItemRecyclerViewAdapter(this, TaskContent.TASKS, twoPane)
+        task_list.adapter = RecyclerViewAdapterForTasks(this, TaskContent.TASKS, twoPane)
     }
 
 
@@ -86,7 +86,7 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     // result arrays are not empty -> permission was granted, yay!
 
                     readFile("time.txt")
-                    task_list.adapter = SimpleItemRecyclerViewAdapter(this, TaskContent.TASKS, twoPane)
+                    task_list.adapter = RecyclerViewAdapterForTasks(this, TaskContent.TASKS, twoPane)
 
                 } else {
                     // permission denied, boo! Disable the
@@ -132,7 +132,7 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //                for now: this is working:
                 task_list.adapter.notifyDataSetChanged()
 //                if something is broken then setup from new with:
-//                task_list.adapter = SimpleItemRecyclerViewAdapter(this, TaskContent.TASKS, twoPane)
+//                task_list.adapter = RecyclerViewAdapterForTime(this, TaskContent.TASKS, twoPane)
             }
 
             else -> super.onOptionsItemSelected(item)

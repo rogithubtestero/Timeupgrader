@@ -15,10 +15,10 @@ import kotlinx.android.synthetic.main.task_list_recyclerview.*
 import org.joda.time.DateTime
 
 
-class SimpleItemRecyclerViewAdapter(private val parentActivity: MainTaskList,
-                                    private val values: List<TaskContent.TaskItem>,
-                                    private val twoPane: Boolean) :
-        RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder>() {
+class RecyclerViewAdapterForTasks(private val parentActivity: MainTaskList,
+                                  private val values: List<TaskContent.TaskItem>,
+                                  private val twoPane: Boolean) :
+        RecyclerView.Adapter<RecyclerViewAdapterForTasks.ViewHolder>() {
 
     private val onClickListener: View.OnClickListener
     private val onLongClickListener: View.OnLongClickListener
@@ -26,11 +26,11 @@ class SimpleItemRecyclerViewAdapter(private val parentActivity: MainTaskList,
 
     init {
         onClickListener = View.OnClickListener { v ->
-            val item = v.tag as TaskContent.TaskItem
+            val task = v.tag as TaskContent.TaskItem
             if (twoPane) {
                 val fragment = TimeDetailFragment().apply {
                     arguments = Bundle().apply {
-                        putString(TimeDetailFragment.ITEM_POS, item.pos.toString())
+                        putString(TimeDetailFragment.ITEM_POS, task.pos.toString())
                     }
                 }
                 parentActivity.supportFragmentManager
@@ -39,7 +39,7 @@ class SimpleItemRecyclerViewAdapter(private val parentActivity: MainTaskList,
                         .commit()
             } else {
                 val intent = Intent(v.context, TimeDetail::class.java).apply {
-                    putExtra(TimeDetailFragment.ITEM_POS, item.pos.toString())
+                    putExtra(TimeDetailFragment.ITEM_POS, task.pos.toString())
                 }
                 v.context.startActivity(intent)
             }
