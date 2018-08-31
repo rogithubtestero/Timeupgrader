@@ -4,8 +4,11 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Environment
+import android.widget.Toast
 import android.support.design.widget.NavigationView
 import android.support.v4.app.ActivityCompat
+import android.support.v4.app.NotificationCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 
@@ -19,6 +22,11 @@ import android.view.*
 import kotlinx.android.synthetic.main.task_list.*
 import kotlinx.android.synthetic.main.main_layout.*
 import kotlinx.android.synthetic.main.task_list_recyclerview.*
+import android.support.v4.app.NotificationManagerCompat
+import android.util.Log
+import com.robinrosenstock.timeupgrader.R.id.icon
+import com.robinrosenstock.timeupgrader.R.mipmap.ic_launcher
+import java.io.File
 
 
 /**
@@ -29,11 +37,15 @@ import kotlinx.android.synthetic.main.task_list_recyclerview.*
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener  {
+class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, ActivityCompat.OnRequestPermissionsResultCallback  {
 
 
     private var twoPane: Boolean = false
-    var MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE : Int = 0
+    private var writepermission: Boolean = false
+    private val TAG = "PermissionDemo"
+    private val RECORD_REQUEST_CODE = 101
+    var firstuse = false
+    var MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE : Int = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,11 +53,21 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setSupportActionBar(toolbar)
         toolbar.title = title
 
+        setupPermissions()
+
+
         val dividerItemDecoration = DividerItemDecoration(task_list.context,1 )
         task_list.addItemDecoration(dividerItemDecoration)
 
         fab.setOnClickListener {
-            addTaskDialog(this)
+
+            val timedirectory = File(Environment.getExternalStorageDirectory(),"/time")
+            timedirectory.mkdirs()
+
+            val timefile = File(timedirectory, "time.txt")
+            timefile.createNewFile()
+
+//                addTaskDialog(this)
         }
 
         val toggle = ActionBarDrawerToggle(
@@ -59,20 +81,42 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             twoPane = true
         }
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
 
-            // Permission is not (yet) granted, request the permission:
-            ActivityCompat.requestPermissions(this,
-                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                    MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE)
+
+        val mBuilder = NotificationCompat.Builder(this, "321")
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle("title")
+                .setOngoing(true)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+
+        val notificationManager = NotificationManagerCompat.from(this)
+        notificationManager.notify(123, mBuilder.build())
+
+
+        Log.e("myTag", "muuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuh")
+
+
+    }
+
+
+    private fun setupPermissions() {
+        val permission = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            Log.i(TAG, "Permission to record denied")
+            makeRequest()
         }
-        else
-        {
+        else {
             readFile("time.txt")
+            task_list.adapter = RecyclerViewAdapterForTasks(this, TaskContent.TASKS, twoPane)
         }
+    }
 
-        task_list.adapter = RecyclerViewAdapterForTasks(this, TaskContent.TASKS, twoPane)
+    private fun makeRequest() {
+        ActivityCompat.requestPermissions(this,
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                RECORD_REQUEST_CODE)
     }
 
 
@@ -80,28 +124,23 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onRequestPermissionsResult(requestCode: Int,
                                             permissions: Array<String>, grantResults: IntArray) {
         when (requestCode) {
-            MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE -> {
+            RECORD_REQUEST_CODE -> {
 
-                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    // result arrays are not empty -> permission was granted, yay!
+                if ((grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED)) {
+                    //permission denied
+                } else {
+                    //permission granted
 
                     readFile("time.txt")
                     task_list.adapter = RecyclerViewAdapterForTasks(this, TaskContent.TASKS, twoPane)
 
-                } else {
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
+                    firstuse = true
                 }
-                return
             }
 
-        // Add other 'when' lines to check for other
-        // permissions this app might request.
-            else -> {
-                // Ignore all other requests.
-            }
         }
     }
+
 
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

@@ -1,5 +1,8 @@
 package com.robinrosenstock.timeupgrader
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.graphics.Color
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.Toast
@@ -27,3 +30,4 @@ class UndoTimeDelete(var task_list : RecyclerView, var task : TaskContent.TaskIt
         // Code to undo the user's last action
     }
 }
+

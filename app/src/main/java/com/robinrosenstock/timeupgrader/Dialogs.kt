@@ -67,8 +67,8 @@ fun addTimeDialog(context : Context, clicked_task_id : Int) {
 //        take text and build a interval item:
 
         val new_index = TaskContent.TASKS[clicked_task_id].interval_list.lastIndex+1
-        val new_time = TaskContent.IntervalItem(12348, begin_time, end_time,4526, 33333)
-        TaskContent.TASKS[clicked_task_id].interval_list.add(new_index, new_time)
+        val new_time = TaskContent.IntervalItem(12348, begin_time, end_time)
+        TaskContent.TASKS[clicked_task_id].interval_list.add(0, new_time)
         (context as Activity).time_list.adapter.notifyItemInserted(new_index)
     })
 
@@ -151,18 +151,9 @@ fun addTimeDialog(context : Context, clicked_task_id : Int) {
 
     }
 
-//    view.alert_dialog_button.setOnClickListener{
-//        val name = view.alert_dialog_text_input.text.toString()
-//        Toast.makeText(this@ItemListActivity, name, Toast.LENGTH_LONG).show()
-
 
     val alertDialog = dialogBuilder.create()
     alertDialog.show()
-
-
-
-
-
 }
 
 

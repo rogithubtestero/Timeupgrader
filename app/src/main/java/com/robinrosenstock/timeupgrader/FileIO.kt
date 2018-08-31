@@ -1,6 +1,7 @@
 package com.robinrosenstock.timeupgrader
 
 import android.os.Environment
+import android.util.Log
 import org.joda.time.*
 import org.joda.time.format.DateTimeFormat
 import java.io.*
@@ -9,8 +10,6 @@ import java.io.*
 fun writeFile(TASKS : MutableList<TaskContent.TaskItem>) {
 
     val timefile = File(Environment.getExternalStoragePublicDirectory("/time"), "time.txt")
-//    val tmpFilename = File(Environment.getExternalStoragePublicDirectory("/time"), "tmp.txt")
-//    val tmpFile = timefile.copyTo(tmpFilename, true, DEFAULT_BUFFER_SIZE)
 
     val writer = timefile.bufferedWriter()
 
@@ -38,17 +37,18 @@ fun writeFile(TASKS : MutableList<TaskContent.TaskItem>) {
 
 fun readFile(filename: String){
 
-    val filedirectory = Environment.getExternalStoragePublicDirectory("/time")
-    val file = File(filedirectory, filename)
 
-    if (file.canRead()) {
+    val timedirectory = File(Environment.getExternalStorageDirectory(),"/time")
+//    timedirectory.mkdirs()
+
+    val timefile = File(timedirectory, "time.txt")
+
+    if (timefile.exists()) {
         parseFile("time.txt")
     }
     else{
-        filedirectory.mkdirs()
-        file.createNewFile()
+        timefile.createNewFile()
     }
-
 }
 
 
@@ -123,7 +123,7 @@ fun parseFile(filename: String): Int {
 //                                    we have begin_time & end_time!
                                     end_time = time_entry_format.parseDateTime(line)
                                     end_time_number = it.lineNumber
-                                    interval_list.add(TaskContent.IntervalItem(time_pos, begin_time, end_time, begin_time_number, end_time_number))
+                                    interval_list.add(TaskContent.IntervalItem(time_pos, begin_time, end_time))
 
 //                                    there might be additional times continue time Loop:
                                     line = it.readLine()
@@ -136,7 +136,7 @@ fun parseFile(filename: String): Int {
                                     ongoing = true
                                     end_time = null
                                     end_time_number = it.lineNumber
-                                    interval_list.add(TaskContent.IntervalItem(time_pos, begin_time, end_time, begin_time_number, end_time_number))
+                                    interval_list.add(TaskContent.IntervalItem(time_pos, begin_time, end_time))
 
                                     //                                    there might be additional times continue time Loop:
                                     line = it.readLine()
@@ -168,7 +168,7 @@ fun parseFile(filename: String): Int {
 //                                    we have begin_time & end_time!
                                     end_time = time_entry_format.parseDateTime(line)
                                     end_time_number = it.lineNumber
-                                    interval_list.add(TaskContent.IntervalItem(time_pos, begin_time, end_time, begin_time_number, end_time_number))
+                                    interval_list.add(TaskContent.IntervalItem(time_pos, begin_time, end_time))
 
 //                                    there might be additional times continue time Loop:
                                     line = it.readLine()
@@ -180,7 +180,7 @@ fun parseFile(filename: String): Int {
 //                                  we have begin_time and end time is null
                                     end_time = null
                                     end_time_number = it.lineNumber
-                                    interval_list.add(TaskContent.IntervalItem(time_pos, begin_time, end_time, begin_time_number, end_time_number))
+                                    interval_list.add(TaskContent.IntervalItem(time_pos, begin_time, end_time))
 
                                     //                                    there might be additional times continue time Loop:
                                     line = it.readLine()

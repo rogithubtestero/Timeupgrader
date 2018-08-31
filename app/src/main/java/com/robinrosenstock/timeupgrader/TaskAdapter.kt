@@ -107,8 +107,8 @@ class RecyclerViewAdapterForTasks(private val parentActivity: MainTaskList,
 
             if(holder.buttonView.isChecked) {
 
-                val intervall_item =  TaskContent.IntervalItem(123, DateTime.now(), null, 123, 321)
-                task.interval_list.add(intervall_item)
+                val intervall_item =  TaskContent.IntervalItem(123, DateTime.now(), null)
+                task.interval_list.add(0,intervall_item)
                 task.ongoing = true
 
             }

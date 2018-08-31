@@ -16,7 +16,7 @@ object TaskContent {
     }
 
 
-    class IntervalItem(var pos: Int ,var begin_time: DateTime?, var end_time: DateTime?, var begin_time_number: Int?, var end_time_number : Int?){
+    class IntervalItem(var pos: Int ,var begin_time: DateTime?, var end_time: DateTime?){
 
 
         val time_entry_format = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")
