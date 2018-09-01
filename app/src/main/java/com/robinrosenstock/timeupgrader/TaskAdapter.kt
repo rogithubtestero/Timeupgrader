@@ -94,14 +94,19 @@ class RecyclerViewAdapterForTasks(private val parentActivity: MainTaskList,
 
         val task = values[position]
         holder.contentView.text = task.title
-        val index = TaskContent.TASKS.indexOf(task)
+        val taskindex = TaskContent.TASKS.indexOf(task)
 
+        // if task is ongoing, then the button is checked:
+        holder.buttonView.isChecked = task.ongoing
 
+        // if task is ongoing make the Notification:
         if(task.ongoing){
-            holder.buttonView.isChecked = true
-        }else{
-            holder.buttonView.isChecked = false
+            makeNotification(parentActivity.baseContext, task)
         }
+        else{
+            dismissNotification((parentActivity.baseContext), taskindex)
+        }
+
 
         holder.buttonView.setOnClickListener {
 
@@ -110,7 +115,6 @@ class RecyclerViewAdapterForTasks(private val parentActivity: MainTaskList,
                 val intervall_item =  TaskContent.IntervalItem(123, DateTime.now(), null)
                 task.interval_list.add(0,intervall_item)
                 task.ongoing = true
-
             }
             else{
 
@@ -120,9 +124,10 @@ class RecyclerViewAdapterForTasks(private val parentActivity: MainTaskList,
                     }
                 }
                 task.ongoing = false
+//                dismissNotification(it.context)
             }
 
-            parentActivity.task_list.adapter.notifyItemChanged(index)
+            parentActivity.task_list.adapter.notifyItemChanged(taskindex)
         }
 
         with(holder.itemView) {

@@ -3,6 +3,8 @@ package com.robinrosenstock.timeupgrader
 import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
+import android.os.Handler
+import android.os.SystemClock
 import android.support.v4.app.FragmentActivity
 import android.support.v7.app.AlertDialog
 import android.widget.EditText
@@ -15,6 +17,36 @@ import org.jetbrains.anko.layoutInflater
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import java.util.*
+
+
+
+
+fun killDialog(context: Context){
+
+
+    val dialog = AlertDialog.Builder(context)
+//    dialog.setTitle("Ciao")
+    dialog.setMessage("You have no trust in me? \n" +
+            "So neither I will in you.")
+    val alert = dialog.create()
+    alert.show()
+
+// Hide after some seconds
+    val handler = Handler()
+    val runnable = Runnable {
+        if (alert.isShowing) {
+            alert.dismiss()
+        }
+    }
+
+    alert.setOnDismissListener {
+        handler.removeCallbacks(runnable)
+        System.exit(0)
+
+    }
+    handler.postDelayed(runnable, 3000)
+}
+
 
 
 fun addTaskDialog(context : Context) {
