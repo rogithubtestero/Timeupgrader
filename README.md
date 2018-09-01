@@ -39,10 +39,21 @@
 # Development
 
 
-[Android Studio](https://developer.android.com/studio/) (with [gradle](https://gradle.org/)) is used, so clone it within Android Studio.
+[Android Studio](https://developer.android.com/studio/) (with [gradle](https://gradle.org/)) is used, so clone it within Android Studio: 
+
+```
+File -> New -> Project from version control -> Git
+Git Repository URL: https://github.com/geniusupgrader/Timeupgrader.git
+```
+
+Then execute:
+
+```
+File -> Sync Project with Gradle Files
+```
+
 
 Not tested on other machines, but should work..
-
 
 
 ## Libraries

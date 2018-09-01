@@ -20,7 +20,7 @@
                                     <map>
                                       <entry key="assetType" value="IMAGE" />
                                       <entry key="imageAsset" value="$PROJECT_DIR$/../../art/logos/timeupgraderlogo/white-icon.png" />
-                                      <entry key="outputName" value="notification-icon" />
+                                      <entry key="outputName" value="notification_icon" />
                                     </map>
                                   </option>
                                 </PersistentState>

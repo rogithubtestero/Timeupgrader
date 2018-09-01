@@ -86,26 +86,26 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
 
-//        val mBuilder = NotificationCompat.Builder(this, "321")
-//                .setSmallIcon(getNotificationIcon())
-//                .setContentTitle("title")
-//                .setOngoing(true)
-//                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-//
-//        val notificationManager = NotificationManagerCompat.from(this)
-//        notificationManager.notify(123, mBuilder.build())
-//
-//
-//        Log.e("myTag", "muuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuh")
+        val mBuilder = NotificationCompat.Builder(this, "321")
+                .setSmallIcon(getNotificationIcon())
+                .setContentTitle("title")
+                .setOngoing(true)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+
+        val notificationManager = NotificationManagerCompat.from(this)
+        notificationManager.notify(123, mBuilder.build())
+
+
+        Log.e("myTag", "muuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuh")
 
 
     }
 
 
-//    private fun getNotificationIcon(): Int {
-//        val useWhiteIcon = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP
-//        return if (useWhiteIcon) R.drawable.notification_icon else R.mipmap.ic_launcher
-//    }
+    private fun getNotificationIcon(): Int {
+        val useWhiteIcon = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP
+        return if (useWhiteIcon) R.drawable.notification_icon else R.mipmap.ic_launcher
+    }
 
 
 
