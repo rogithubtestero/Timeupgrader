@@ -27,6 +27,9 @@ import android.util.Log
 import com.robinrosenstock.timeupgrader.R.id.icon
 import com.robinrosenstock.timeupgrader.R.mipmap.ic_launcher
 import java.io.File
+import com.robinrosenstock.timeupgrader.R.mipmap.ic_launcher
+
+
 
 
 /**
@@ -60,14 +63,14 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         task_list.addItemDecoration(dividerItemDecoration)
 
         fab.setOnClickListener {
+//
+//            val timedirectory = File(Environment.getExternalStorageDirectory(),"/time")
+//            timedirectory.mkdirs()
+//
+//            val timefile = File(timedirectory, "time.txt")
+//            timefile.createNewFile()
 
-            val timedirectory = File(Environment.getExternalStorageDirectory(),"/time")
-            timedirectory.mkdirs()
-
-            val timefile = File(timedirectory, "time.txt")
-            timefile.createNewFile()
-
-//                addTaskDialog(this)
+                addTaskDialog(this)
         }
 
         val toggle = ActionBarDrawerToggle(
@@ -83,20 +86,27 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
 
-        val mBuilder = NotificationCompat.Builder(this, "321")
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle("title")
-                .setOngoing(true)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-
-        val notificationManager = NotificationManagerCompat.from(this)
-        notificationManager.notify(123, mBuilder.build())
-
-
-        Log.e("myTag", "muuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuh")
+//        val mBuilder = NotificationCompat.Builder(this, "321")
+//                .setSmallIcon(getNotificationIcon())
+//                .setContentTitle("title")
+//                .setOngoing(true)
+//                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+//
+//        val notificationManager = NotificationManagerCompat.from(this)
+//        notificationManager.notify(123, mBuilder.build())
+//
+//
+//        Log.e("myTag", "muuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuh")
 
 
     }
+
+
+//    private fun getNotificationIcon(): Int {
+//        val useWhiteIcon = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP
+//        return if (useWhiteIcon) R.drawable.notification_icon else R.mipmap.ic_launcher
+//    }
+
 
 
     private fun setupPermissions() {

@@ -34,8 +34,11 @@ fun addTaskDialog(context : Context) {
         val new_index = TaskContent.TASKS.lastIndex+1
         val new_task = TaskContent.TaskItem(1234, name, ArrayList(),456, false)
         TaskContent.TASKS.add(new_index, new_task)
-
         (context as Activity).task_list.adapter.notifyItemInserted(new_index)
+        writeFile(TaskContent.TASKS)
+        TaskContent.TASKS.removeAll(TaskContent.TASKS)
+        readFile("time.txt")
+//        task_list.adapter.notifyDataSetChanged()
     })
 
     val alertDialog = dialogBuilder.create()
@@ -70,6 +73,7 @@ fun addTimeDialog(context : Context, clicked_task_id : Int) {
         val new_time = TaskContent.IntervalItem(12348, begin_time, end_time)
         TaskContent.TASKS[clicked_task_id].interval_list.add(0, new_time)
         (context as Activity).time_list.adapter.notifyItemInserted(new_index)
+
     })
 
     view.button2.setOnClickListener {
