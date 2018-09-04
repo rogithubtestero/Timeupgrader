@@ -15,10 +15,7 @@ import android.support.v4.app.TaskStackBuilder
 import kotlinx.android.synthetic.main.task_list_recyclerview.*
 import android.app.Notification.EXTRA_NOTIFICATION_ID
 import android.os.Bundle
-
-
-
-
+import android.support.v4.content.LocalBroadcastManager
 
 
 class UndoTaskDelete(var task_list : RecyclerView, var task : TaskContent.TaskItem, var index : Int) : View.OnClickListener {
@@ -71,21 +68,14 @@ fun makeNotification(context: Context, task: TaskContent.TaskItem) {
     val pendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
 
 
-//    val broadcastIntent = Intent(context, ToggleBroadcastReceiver::class.java)
-//    broadcastIntent.putExtra("toastMessage", "ttttttodddd")
-//    val actionIntent = PendingIntent.getBroadcast(context,
-//            0, broadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT)
-
-
     val taskbundle = Bundle()
     taskbundle.putString("tasktitle", tasktitle)
     taskbundle.putInt("taskindex", taskindex)
 
-
     val broadcastIntent2 = Intent(context, StopBroadcastReceiver::class.java)
     broadcastIntent2.putExtra("taskbundle", taskbundle)
-    val actionIntent2 = PendingIntent.getBroadcast(context,
-            0, broadcastIntent2, PendingIntent.FLAG_UPDATE_CURRENT)
+    val actionIntent2 = PendingIntent.getBroadcast(context, taskindex, broadcastIntent2, PendingIntent.FLAG_UPDATE_CURRENT)
+
 
 
     val mBuilder = NotificationCompat.Builder(context, "321")

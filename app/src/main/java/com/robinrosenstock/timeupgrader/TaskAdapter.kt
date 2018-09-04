@@ -27,10 +27,13 @@ class RecyclerViewAdapterForTasks(private val parentActivity: MainTaskList,
     init {
         onClickListener = View.OnClickListener { v ->
             val task = v.tag as TaskContent.TaskItem
+            val taskindex = TaskContent.TASKS.indexOf(task)
+
             if (twoPane) {
                 val fragment = TimeDetailFragment().apply {
                     arguments = Bundle().apply {
-                        putString(TimeDetailFragment.ITEM_POS, task.pos.toString())
+                        putString(TimeDetailFragment.ITEM_POS, taskindex.toString())
+//                        putString(TimeDetailFragment.ITEM_POS, task.pos.toString())
                     }
                 }
                 parentActivity.supportFragmentManager
@@ -39,7 +42,7 @@ class RecyclerViewAdapterForTasks(private val parentActivity: MainTaskList,
                         .commit()
             } else {
                 val intent = Intent(v.context, TimeDetail::class.java).apply {
-                    putExtra(TimeDetailFragment.ITEM_POS, task.pos.toString())
+                    putExtra(TimeDetailFragment.ITEM_POS, taskindex)
                 }
                 v.context.startActivity(intent)
             }
@@ -90,6 +93,12 @@ class RecyclerViewAdapterForTasks(private val parentActivity: MainTaskList,
         return ViewHolder(view)
     }
 
+
+//    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+//        super.onAttachedToRecyclerView(recyclerView)
+//        val mRecyclerView = recyclerView
+//    }
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
         val task = values[position]
@@ -112,7 +121,7 @@ class RecyclerViewAdapterForTasks(private val parentActivity: MainTaskList,
 
             if(holder.buttonView.isChecked) {
 
-                val intervall_item =  TaskContent.IntervalItem(123, DateTime.now(), null)
+                val intervall_item =  TaskContent.IntervalItem(DateTime.now(), null)
                 task.interval_list.add(0,intervall_item)
                 task.ongoing = true
             }
@@ -124,7 +133,6 @@ class RecyclerViewAdapterForTasks(private val parentActivity: MainTaskList,
                     }
                 }
                 task.ongoing = false
-//                dismissNotification(it.context)
             }
 
             parentActivity.task_list.adapter.notifyItemChanged(taskindex)

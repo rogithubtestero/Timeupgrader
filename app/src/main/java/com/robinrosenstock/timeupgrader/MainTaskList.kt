@@ -1,8 +1,11 @@
 package com.robinrosenstock.timeupgrader
 
 import android.Manifest
+import android.app.ActivityManager
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.app.ActivityCompat
@@ -11,11 +14,11 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.widget.DividerItemDecoration
+import android.util.Log
 import android.view.*
 import kotlinx.android.synthetic.main.task_list.*
 import kotlinx.android.synthetic.main.main_layout.*
 import kotlinx.android.synthetic.main.task_list_recyclerview.*
-
 
 
 /**
@@ -29,9 +32,11 @@ import kotlinx.android.synthetic.main.task_list_recyclerview.*
 class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, ActivityCompat.OnRequestPermissionsResultCallback  {
 
 
+    var memberFieldString: String? = null
     private var twoPane: Boolean = false
     private val RECORD_REQUEST_CODE = 101
     var firstuse = false
+    public var myadapter = RecyclerViewAdapterForTasks(this, TaskContent.TASKS, twoPane)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,7 +49,7 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             // effectively reloading data:
             TaskContent.TASKS.removeAll(TaskContent.TASKS)
             readFile("time.txt")
-            task_list.adapter = RecyclerViewAdapterForTasks(this, TaskContent.TASKS, twoPane)
+            task_list.adapter = myadapter
         }
         else{
             requestWritePermission()
@@ -56,6 +61,7 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         fab.setOnClickListener {
                 addTaskDialog(this)
+
         }
 
         val toggle = ActionBarDrawerToggle(
@@ -71,6 +77,14 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
     }
+
+
+
+    fun reload(){
+
+
+    }
+
 
 
     private fun hasWritePermission():Boolean {
@@ -141,10 +155,7 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.reload -> {
                 TaskContent.TASKS.removeAll(TaskContent.TASKS)
                 readFile("time.txt")
-//                for now: this is working:
                 task_list.adapter.notifyDataSetChanged()
-//                if something is broken then setup from new with:
-//                task_list.adapter = RecyclerViewAdapterForTime(this, TaskContent.TASKS, twoPane)
             }
 
             else -> super.onOptionsItemSelected(item)
@@ -201,6 +212,8 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onPause() {
         super.onPause()
 
+        Log.e("YourActivity", "onPause")
+
     }
 
 
@@ -219,6 +232,28 @@ class MainTaskList : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
 
+    override fun onNewIntent(intent: Intent) {
+        Log.e("YourActivity", "onNewIntent is called!")
+
+        memberFieldString = intent.getStringExtra("KEY")
+
+        super.onNewIntent(intent)
+
+    } // End of onNewIntent(Intent intent)
+
+    override fun onResume() {
+
+
+//        TaskContent.TASKS.removeAll(TaskContent.TASKS)
+//        readFile("time.txt")
+//        task_list.adapter.notifyDataSetChanged()
+
+        Log.e("YourActivity", "onResume")
+
+
+        super.onResume()
+
+    } // End of onResume()
 
 
 }

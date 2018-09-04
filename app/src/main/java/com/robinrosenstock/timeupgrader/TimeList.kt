@@ -24,9 +24,6 @@ class TimeDetail : AppCompatActivity() {
 
     private var twoPane: Boolean = false
 
-    var clicked_task_id : Int = -1
-    lateinit var clicked_task : TaskContent.TaskItem
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,19 +33,17 @@ class TimeDetail : AppCompatActivity() {
         val dividerItemDecoration = DividerItemDecoration(time_list.context,1 )
         time_list.addItemDecoration(dividerItemDecoration)
 
-//        get the clicked task
-        clicked_task_id = intent.extras.getString(TimeDetailFragment.ITEM_POS).toInt()
-        clicked_task = TaskContent.TASKS[clicked_task_id]
+        val taskindex = intent.extras.getInt(TimeDetailFragment.ITEM_POS)
+        val task = TaskContent.TASKS[taskindex]
 
-        toolbar_time.title = clicked_task.title + " - Times"
-
+        toolbar_time.title = task.title + " - Times"
 
         fab_time.setOnClickListener {
-            addTimeDialog(this, clicked_task_id)
+            addTimeDialog(this, taskindex)
         }
 
 
-        time_list.adapter = RecyclerViewAdapterForTime(this, clicked_task.interval_list, twoPane, clicked_task)
+        time_list.adapter = RecyclerViewAdapterForTime(this, task.interval_list, twoPane, task)
     }
 
 

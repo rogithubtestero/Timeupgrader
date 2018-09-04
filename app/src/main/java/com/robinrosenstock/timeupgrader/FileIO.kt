@@ -123,7 +123,7 @@ fun parseFile(filename: String): Int {
 //                                    we have begin_time & end_time!
                                     end_time = time_entry_format.parseDateTime(line)
                                     end_time_number = it.lineNumber
-                                    interval_list.add(TaskContent.IntervalItem(time_pos, begin_time, end_time))
+                                    interval_list.add(TaskContent.IntervalItem(begin_time, end_time))
 
 //                                    there might be additional times continue time Loop:
                                     line = it.readLine()
@@ -136,7 +136,7 @@ fun parseFile(filename: String): Int {
                                     ongoing = true
                                     end_time = null
                                     end_time_number = it.lineNumber
-                                    interval_list.add(TaskContent.IntervalItem(time_pos, begin_time, end_time))
+                                    interval_list.add(TaskContent.IntervalItem(begin_time, end_time))
 
                                     //                                    there might be additional times continue time Loop:
                                     line = it.readLine()
@@ -168,7 +168,7 @@ fun parseFile(filename: String): Int {
 //                                    we have begin_time & end_time!
                                     end_time = time_entry_format.parseDateTime(line)
                                     end_time_number = it.lineNumber
-                                    interval_list.add(TaskContent.IntervalItem(time_pos, begin_time, end_time))
+                                    interval_list.add(TaskContent.IntervalItem(begin_time, end_time))
 
 //                                    there might be additional times continue time Loop:
                                     line = it.readLine()
@@ -180,7 +180,7 @@ fun parseFile(filename: String): Int {
 //                                  we have begin_time and end time is null
                                     end_time = null
                                     end_time_number = it.lineNumber
-                                    interval_list.add(TaskContent.IntervalItem(time_pos, begin_time, end_time))
+                                    interval_list.add(TaskContent.IntervalItem(begin_time, end_time))
 
                                     //                                    there might be additional times continue time Loop:
                                     line = it.readLine()
@@ -203,7 +203,7 @@ fun parseFile(filename: String): Int {
 //                            we have a new task!
 //                            now save the old task and then
 //                            go out of the time loop to the taskLoop@ again!
-                            val parsedTask = TaskContent.TaskItem(task_pos, task_name, interval_list, task_line_number, ongoing)
+                            val parsedTask = TaskContent.TaskItem(task_name, interval_list, ongoing)
                             TaskContent.TASKS.add(parsedTask)
                             ongoing = false
                             continue@taskLoop
@@ -212,7 +212,7 @@ fun parseFile(filename: String): Int {
                         else -> {
 
                             print("abort")
-                            val parsedTask = TaskContent.TaskItem(task_pos, task_name, interval_list, task_line_number, ongoing)
+                            val parsedTask = TaskContent.TaskItem(task_name, interval_list, ongoing)
                             TaskContent.TASKS.add(parsedTask)
                             ongoing = false
 
@@ -225,7 +225,7 @@ fun parseFile(filename: String): Int {
                 }//timeLoop@
 
 //                We have a valid task name, but no times or invalid times
-                val parsedTask = TaskContent.TaskItem(task_pos, task_name, interval_list, task_line_number, ongoing)
+                val parsedTask = TaskContent.TaskItem(task_name, interval_list, ongoing)
                 TaskContent.TASKS.add(parsedTask)
 //                ongoing = false
 

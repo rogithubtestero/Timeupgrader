@@ -9,14 +9,12 @@ import org.joda.time.format.PeriodFormatterBuilder
 
 object TaskContent {
 
-    val TASKS: MutableList<TaskItem> = ArrayList()
+    var TASKS: MutableList<TaskItem> = ArrayList()
 
-    init {
-
-    }
+    init {}
 
 
-    class IntervalItem(var pos: Int ,var begin_time: DateTime?, var end_time: DateTime?){
+    class IntervalItem(var begin_time: DateTime?, var end_time: DateTime?){
 
 
         val time_entry_format = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")
@@ -61,10 +59,8 @@ object TaskContent {
     }
 
 
-    data class TaskItem(var pos: Int,
-                        var title: String,
+    data class TaskItem(var title: String,
                         var interval_list: MutableList<IntervalItem>,
-                        var line_number : Int,
                         var ongoing : Boolean = false) {
 
 

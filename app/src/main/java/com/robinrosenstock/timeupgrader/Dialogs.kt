@@ -58,20 +58,14 @@ fun addTaskDialog(context : Context) {
 
     dialogBuilder.setView(edittext)
     dialogBuilder.setTitle("Add a new task")
-    dialogBuilder.setNegativeButton("Cancel", { _: DialogInterface, _: Int ->
-        //            do nothing
-    })
-    dialogBuilder.setPositiveButton("Add!", { _: DialogInterface, _: Int ->
+    dialogBuilder.setNegativeButton("Cancel") { _: DialogInterface, _: Int -> }
+    dialogBuilder.setPositiveButton("Add!") { _: DialogInterface, _: Int ->
         name = edittext.text.toString()
-        val new_index = TaskContent.TASKS.lastIndex+1
-        val new_task = TaskContent.TaskItem(1234, name, ArrayList(),456, false)
-        TaskContent.TASKS.add(new_index, new_task)
-        (context as Activity).task_list.adapter.notifyItemInserted(new_index)
-        writeFile(TaskContent.TASKS)
-        TaskContent.TASKS.removeAll(TaskContent.TASKS)
-        readFile("time.txt")
-//        task_list.adapter.notifyDataSetChanged()
-    })
+        val new_task = TaskContent.TaskItem(name, ArrayList(), false)
+        // add the task on the top (index: 0)
+        TaskContent.TASKS.add(0, new_task)
+        (context as Activity).task_list.adapter.notifyItemInserted(0)
+    }
 
     val alertDialog = dialogBuilder.create()
     alertDialog.show()
@@ -102,7 +96,7 @@ fun addTimeDialog(context : Context, clicked_task_id : Int) {
 //        take text and build a interval item:
 
         val new_index = TaskContent.TASKS[clicked_task_id].interval_list.lastIndex+1
-        val new_time = TaskContent.IntervalItem(12348, begin_time, end_time)
+        val new_time = TaskContent.IntervalItem(begin_time, end_time)
         TaskContent.TASKS[clicked_task_id].interval_list.add(0, new_time)
         (context as Activity).time_list.adapter.notifyItemInserted(new_index)
 
@@ -210,7 +204,7 @@ fun renameTaskDialog(task : TaskContent.TaskItem, context: Context) {
     })
     dialogBuilder.setPositiveButton("Rename!", { _: DialogInterface, _: Int ->
         new_name = edittext.text.toString()
-        TaskContent.TASKS[task.pos].title = new_name
+        task.title = new_name
         (context as Activity).task_list.adapter.notifyItemChanged(index)
     })
     val alertDialog = dialogBuilder.create()
